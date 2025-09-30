@@ -52,3 +52,30 @@
 2025-09-30 21:38:11,079 - ml_main - WARNING - No speech recognizer available
 2025-09-30 21:38:11,079 - ml_main - INFO - No real transcript available, attempting basic video analysis...
 2025-09-30 21:38:11,123 - ml_main - INFO - Created basic video description: 237 characters
+2025-09-30 21:47:25,722 - ml_models.mlflow_integration - INFO - Using MLflow server at http://localhost:5000
+2025-09-30 21:47:29,499 - ml_models.mlflow_integration - INFO - Using existing experiment: video_summarizer
+2025-09-30 21:47:29,500 - ml_models.mlflow_integration - INFO - MLflowManager initialized with experiment: video_summarizer
+2025-09-30 21:47:29,501 - ml_models.model_serving - INFO - ModelRegistry initialized at model_registry
+2025-09-30 21:47:29,907 - ml_models.model_evaluation - INFO - ModelEvaluator initialized on cpu
+2025-09-30 21:47:29,908 - ml_main - INFO - EnhancedVideoSummarizer initialized on cpu
+2025-09-30 21:47:29,908 - ml_main - INFO - Starting fast video processing: temp\Every Computer Component Explained in 3 Minutes.mp4
+2025-09-30 21:47:29,908 - ml_models.data_preprocessing - INFO - Extracting audio from video: temp\Every Computer Component Explained in 3 Minutes.mp4
+2025-09-30 21:47:32,123 - ml_models.data_preprocessing - WARNING - Librosa extraction failed: 
+2025-09-30 21:47:34,555 - ml_models.data_preprocessing - INFO - Audio extracted successfully with moviepy: temp\Every Computer Component Explained in 3 Minutes_audio.wav
+2025-09-30 21:47:34,556 - ml_main - INFO - Audio extracted successfully: temp\Every Computer Component Explained in 3 Minutes_audio.wav
+2025-09-30 21:47:34,556 - ml_main - WARNING - No speech recognizer available
+2025-09-30 21:47:34,556 - ml_main - INFO - No real transcript available, attempting intelligent content analysis...
+2025-09-30 21:47:40,820 - ml_main - INFO - Created intelligent content analysis: 422 characters
+2025-09-30 21:52:55,046 - ml_models.mlflow_integration - INFO - Using MLflow server at http://localhost:5000
+2025-09-30 21:52:58,657 - ml_models.mlflow_integration - INFO - Using existing experiment: video_summarizer
+2025-09-30 21:52:58,658 - ml_models.mlflow_integration - INFO - MLflowManager initialized with experiment: video_summarizer
+2025-09-30 21:52:58,659 - ml_models.model_serving - INFO - ModelRegistry initialized at model_registry
+2025-09-30 21:52:59,020 - ml_models.model_evaluation - INFO - ModelEvaluator initialized on cpu
+2025-09-30 21:52:59,021 - ml_main - INFO - EnhancedVideoSummarizer initialized on cpu
+2025-09-30 21:52:59,021 - ml_main - INFO - Starting fast video processing: temp\Computer Basics： What Is a Computer？.mp4
+2025-09-30 21:52:59,021 - ml_models.data_preprocessing - INFO - Extracting audio from video: temp\Computer Basics： What Is a Computer？.mp4
+2025-09-30 21:53:01,227 - ml_models.data_preprocessing - WARNING - Librosa extraction failed: 
+2025-09-30 21:53:03,747 - ml_models.data_preprocessing - INFO - Audio extracted successfully with moviepy: temp\Computer Basics What Is a Computer_audio.wav
+2025-09-30 21:53:03,747 - ml_main - INFO - Audio extracted successfully: temp\Computer Basics What Is a Computer_audio.wav
+2025-09-30 21:53:03,748 - ml_main - WARNING - No speech recognizer available - using basic audio analysis
+2025-09-30 21:53:35,258 - ml_main - INFO - Created basic audio-based description: 288 characters
