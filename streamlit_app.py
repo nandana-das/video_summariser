@@ -9,8 +9,18 @@ from typing import Optional
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from main import VideoSummarizer
+import re
+import subprocess
+import sys
+from ml_main import EnhancedVideoSummarizer
 from utils.logger import setup_logger
+
+# Try to import yt-dlp for YouTube processing
+try:
+    import yt_dlp
+    YOUTUBE_AVAILABLE = True
+except ImportError:
+    YOUTUBE_AVAILABLE = False
 
 # Configure page
 st.set_page_config(
@@ -22,6 +32,52 @@ st.set_page_config(
 
 # Initialize logger
 logger = setup_logger(__name__)
+
+def is_youtube_url(url: str) -> bool:
+    """Check if the URL is a valid YouTube URL."""
+    youtube_patterns = [
+        r'(?:https?://)?(?:www\.)?youtube\.com/watch\?v=([^&\n?#]+)',
+        r'(?:https?://)?(?:www\.)?youtu\.be/([^&\n?#]+)',
+        r'(?:https?://)?(?:www\.)?youtube\.com/embed/([^&\n?#]+)',
+        r'(?:https?://)?(?:www\.)?youtube\.com/v/([^&\n?#]+)'
+    ]
+    return any(re.match(pattern, url) for pattern in youtube_patterns)
+
+def download_youtube_video(url: str, output_dir: str = "temp") -> Optional[str]:
+    """Download YouTube video and return the file path."""
+    if not YOUTUBE_AVAILABLE:
+        st.error("YouTube processing requires yt-dlp. Please install it: pip install yt-dlp")
+        return None
+    
+    try:
+        # Create output directory
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Configure yt-dlp options
+        ydl_opts = {
+            'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
+            'format': 'best[height<=720]',  # Limit to 720p for faster processing
+            'noplaylist': True,
+        }
+        
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            # Get video info first
+            info = ydl.extract_info(url, download=False)
+            video_title = info.get('title', 'Unknown')
+            
+            # Download the video
+            ydl.download([url])
+            
+            # Find the downloaded file
+            for file in os.listdir(output_dir):
+                if file.endswith(('.mp4', '.webm', '.mkv', '.avi')):
+                    return os.path.join(output_dir, file)
+        
+        return None
+        
+    except Exception as e:
+        st.error(f"Error downloading YouTube video: {str(e)}")
+        return None
 
 # Custom CSS
 st.markdown("""
@@ -87,6 +143,14 @@ def main():
             help="Select the type of file you want to process"
         )
         
+        # Processing mode
+        processing_mode = st.radio(
+            "Processing Mode:",
+            ["⚡ Fast (Quick Results)", "🧠 Comprehensive (Full ML Analysis)"],
+            help="Fast mode provides quick results, Comprehensive mode uses full ML suite but takes longer"
+        )
+        comprehensive = processing_mode == "🧠 Comprehensive (Full ML Analysis)"
+        
         st.markdown("---")
         st.markdown("### 📊 About")
         st.markdown("""
@@ -102,34 +166,68 @@ def main():
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.header("📁 Upload File")
+        st.header("📁 Upload File or YouTube URL")
         
-        # File upload
-        uploaded_file = st.file_uploader(
-            f"Choose a {file_type.lower()} file",
-            type=['mp4', 'avi', 'mov', 'mkv', 'wmv', 'flv', 'wav', 'mp3', 'm4a', 'flac', 'txt'],
-            help=f"Upload a {file_type.lower()} file to process"
+        # Input method selection
+        input_method = st.radio(
+            "Choose input method:",
+            ["📁 Upload File", "🎥 YouTube URL"],
+            horizontal=True
         )
         
-        if uploaded_file is not None:
+        uploaded_file = None
+        youtube_url = None
+        
+        if input_method == "📁 Upload File":
+            # File upload
+            uploaded_file = st.file_uploader(
+                f"Choose a {file_type.lower()} file",
+                type=['mp4', 'avi', 'mov', 'mkv', 'wmv', 'flv', 'wav', 'mp3', 'm4a', 'flac', 'txt'],
+                help=f"Upload a {file_type.lower()} file to process"
+            )
+        else:
+            # YouTube URL input
+            youtube_url = st.text_input(
+                "Enter YouTube URL:",
+                placeholder="https://www.youtube.com/watch?v=...",
+                help="Paste a YouTube video URL to process"
+            )
+            
+            if youtube_url and not is_youtube_url(youtube_url):
+                st.error("Please enter a valid YouTube URL")
+                youtube_url = None
+        
+        if uploaded_file is not None or youtube_url is not None:
             # Display file info
-            st.success(f"✅ File uploaded: {uploaded_file.name}")
+            if uploaded_file:
+                st.success(f"✅ File uploaded: {uploaded_file.name}")
+            elif youtube_url:
+                st.success(f"✅ YouTube URL: {youtube_url}")
             
             # Process button
             if st.button("🚀 Process File", type="primary"):
                 with st.spinner("Processing file... This may take a few minutes."):
                     try:
-                        # Save uploaded file temporarily
-                        with tempfile.NamedTemporaryFile(delete=False, suffix=Path(uploaded_file.name).suffix) as tmp_file:
-                            tmp_file.write(uploaded_file.getvalue())
-                            tmp_path = tmp_file.name
+                        # Handle file or YouTube URL
+                        if uploaded_file:
+                            # Save uploaded file temporarily
+                            with tempfile.NamedTemporaryFile(delete=False, suffix=Path(uploaded_file.name).suffix) as tmp_file:
+                                tmp_file.write(uploaded_file.getvalue())
+                                tmp_path = tmp_file.name
+                        elif youtube_url:
+                            # Download YouTube video
+                            st.info("📥 Downloading YouTube video...")
+                            tmp_path = download_youtube_video(youtube_url)
+                            if not tmp_path:
+                                st.error("Failed to download YouTube video")
+                                return
                         
                         # Initialize summarizer
-                        summarizer = VideoSummarizer()
+                        summarizer = EnhancedVideoSummarizer()
                         
                         # Process based on file type
                         if file_type == "Video":
-                            results = summarizer.process_video(tmp_path, max_sentences=max_sentences)
+                            results = summarizer.process_video(tmp_path, max_sentences=max_sentences, comprehensive=comprehensive)
                         elif file_type == "Audio":
                             results = summarizer.process_audio(tmp_path, max_sentences=max_sentences)
                         else:  # Transcript
@@ -145,6 +243,11 @@ def main():
                             st.session_state['results'] = results
                             st.session_state['summary_data'] = results['summary_data']
                             
+                            # Show summary immediately
+                            st.markdown("### 📝 Summary")
+                            st.write(results['summary_data']['summary'])
+                            
+                            
                         else:
                             st.error(f"❌ Error: {results['error']}")
                             
@@ -158,6 +261,7 @@ def main():
         if 'summary_data' in st.session_state:
             summary_data = st.session_state['summary_data']
             metadata = summary_data.get('metadata', {})
+            
             
             # Metrics
             col_a, col_b = st.columns(2)
@@ -187,6 +291,13 @@ def main():
         st.header("📋 Results")
         
         summary_data = st.session_state['summary_data']
+        
+        # Show basic info immediately
+        st.markdown("### 📝 Summary")
+        st.write(summary_data['summary'])
+        
+        st.markdown("### 📄 Transcript")
+        st.write(summary_data['transcript'])
         
         # Tabs for different result types
         tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Summary", "🎯 Action Items", "🔑 Keywords", "👥 Entities", "📊 Analysis"])

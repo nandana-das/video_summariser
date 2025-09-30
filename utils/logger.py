@@ -26,10 +26,10 @@ def setup_logger(name: str = "video_summarizer") -> logging.Logger:
     # Create formatter
     formatter = logging.Formatter(LOGGING_CONFIG["format"])
     
-    # File handler
+    # File handler with UTF-8 encoding
     log_file = LOGGING_CONFIG["file"]
     log_file.parent.mkdir(parents=True, exist_ok=True)
-    file_handler = logging.FileHandler(log_file)
+    file_handler = logging.FileHandler(log_file, encoding='utf-8')
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
     

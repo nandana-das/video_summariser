@@ -190,26 +190,40 @@ AUDIO_SETTINGS = {
 
 ```
 video-summarizer/
-├── main.py                 # Main CLI application
-├── streamlit_app.py        # Web interface
-├── config.py              # Configuration settings
-├── requirements.txt       # Python dependencies
-├── setup.py              # Package setup
-├── README.md             # This file
-├── audioExtraction.py    # Audio extraction module
-├── transcriptCreation.py # Speech recognition module
-├── transcriptSummariser.py # Summarization module
-├── email_sender.py       # Email functionality
-├── utils/                # Utility modules
+├── ml_main.py                    # Enhanced main application with ML suite
+├── streamlit_app.py              # Web interface
+├── config.py                     # Configuration settings
+├── requirements.txt              # Python dependencies
+├── setup_ml_suite.py             # Installation script
+├── test_ml_suite.py              # Test suite
+├── ML_SUITE_README.md            # Complete ML suite documentation
+├── README.md                     # This file
+├── audioExtraction.py            # Audio extraction module
+├── transcriptCreation.py         # Speech recognition module
+├── transcriptSummariser_fixed.py # Summarization module
+├── email_sender.py               # Email functionality
+├── ml_models/                    # Complete ML Suite
+│   ├── transformer_summarizer.py
+│   ├── advanced_speech_recognition.py
+│   ├── video_analysis.py
+│   ├── mlflow_integration.py
+│   ├── data_preprocessing.py
+│   ├── model_evaluation.py
+│   ├── model_training.py
+│   └── model_serving.py
+├── utils/                        # Utility modules
 │   ├── __init__.py
 │   └── logger.py
-├── data/                 # Input data directory
-├── models/               # AI models directory
-├── output/               # Output files directory
-│   ├── audio/           # Extracted audio files
-│   ├── transcripts/     # Generated transcripts
-│   └── summaries/       # Generated summaries
-└── logs/                # Log files
+├── data/                         # Input data directory
+├── models/                       # AI models directory
+├── output/                       # Output files directory
+│   ├── audio/                   # Extracted audio files
+│   ├── transcripts/             # Generated transcripts
+│   └── summaries/               # Generated summaries
+├── logs/                        # Log files
+└── examples/                    # Usage examples
+    ├── __init__.py
+    └── basic_usage.py
 ```
 
 ## 🔧 API Reference
