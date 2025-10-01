@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Summarizer - Multi-Platform Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.1rem;
+            color: #718096;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 4rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        .platforms {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 4rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .platforms h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2d3748;
+        }
+        
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .platform-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .platform-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+        
+        .platform-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .platform-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+        
+        .platform-desc {
+            font-size: 0.9rem;
+            color: #718096;
+            line-height: 1.4;
+        }
+        
+        .features {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 4rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .features h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2d3748;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-desc {
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        .cta {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cta h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            color: #718096;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .footer {
+            text-align: center;
+            color: #718096;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .platform-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>🎥 AI Video Summarizer</h1>
+            <h2>Multi-Platform Video Analysis & Summarization</h2>
+            <p>Transform any video into intelligent summaries with action items, keywords, and insights. Supporting 1000+ platforms including YouTube, Vimeo, Instagram, TikTok, Facebook, Twitter, Twitch, and many more!</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">1000+</div>
+                <div class="stat-label">Platforms</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">AI</div>
+                <div class="stat-label">Powered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">Fast</div>
+                <div class="stat-label">Processing</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">Free</div>
+                <div class="stat-label">To Use</div>
+            </div>
+        </div>
+        
+        <div class="platforms">
+            <h3>🌐 Supported Platforms</h3>
+            <p style="text-align: center; color: #718096; margin-bottom: 2rem;">Process videos from 1000+ platforms with a single click!</p>
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <div class="platform-icon">📺</div>
+                    <div class="platform-name">YouTube</div>
+                    <div class="platform-desc">The world's largest video platform</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🎬</div>
+                    <div class="platform-name">Vimeo</div>
+                    <div class="platform-desc">High-quality video hosting and sharing</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">📷</div>
+                    <div class="platform-name">Instagram</div>
+                    <div class="platform-desc">Photo and video sharing platform</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🎵</div>
+                    <div class="platform-name">TikTok</div>
+                    <div class="platform-desc">Short-form video platform</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">👥</div>
+                    <div class="platform-name">Facebook</div>
+                    <div class="platform-desc">Social media video content</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🐦</div>
+                    <div class="platform-name">Twitter</div>
+                    <div class="platform-desc">Social media video posts</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🎮</div>
+                    <div class="platform-name">Twitch</div>
+                    <div class="platform-desc">Live streaming and gaming content</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🎥</div>
+                    <div class="platform-name">Dailymotion</div>
+                    <div class="platform-desc">Video sharing platform</div>
+                </div>
+            </div>
+            <p style="text-align: center; color: #718096; margin-top: 1rem;">... and 1000+ more platforms!</p>
+        </div>
+        
+        <div class="features">
+            <h3>🚀 Key Features</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <div class="feature-title">Multi-Platform Support</div>
+                    <div class="feature-desc">Process videos from 1000+ platforms with a single interface</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎥</div>
+                    <div class="feature-title">Video Processing</div>
+                    <div class="feature-desc">Extract audio from multiple video formats</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎵</div>
+                    <div class="feature-title">Audio Extraction</div>
+                    <div class="feature-desc">High-quality audio extraction and processing</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <div class="feature-title">Smart Summarization</div>
+                    <div class="feature-desc">AI-powered intelligent text summarization</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Action Items</div>
+                    <div class="feature-desc">Automatically extract tasks and action items</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔑</div>
+                    <div class="feature-title">Keyword Analysis</div>
+                    <div class="feature-desc">Extract key topics and important terms</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <div class="feature-title">Entity Recognition</div>
+                    <div class="feature-desc">Identify people, organizations, and locations</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Analytics & Insights</div>
+                    <div class="feature-desc">Comprehensive analytics and visualizations</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta">
+            <h3>Ready to Get Started?</h3>
+            <p>Transform any video into intelligent summaries with our AI-powered platform</p>
+            <a href="#" class="btn">🚀 Launch App</a>
+        </div>
+        
+        <div class="footer">
+            <p>🤖 Powered by AI | Built with Streamlit | Video Summarizer v2.0 | Multi-Platform Edition</p>
+        </div>
+    </div>
+</body>
+</html>

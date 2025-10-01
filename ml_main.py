@@ -14,6 +14,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from utils.logger import setup_logger
+from utils.video_source_manager import VideoSourceManager
 from config import (
     MLFLOW_SETTINGS, SERVING_SETTINGS, DEVICE_SETTINGS,
     SUMMARIZATION_SETTINGS, TRANSCRIPTION_SETTINGS, CV_SETTINGS
@@ -118,7 +119,7 @@ class EnhancedVideoSummarizer:
         Process video file with optional comprehensive analysis.
         
         Args:
-            video_path: Path to video file
+            video_path: Path to video file or URL
             max_sentences: Maximum sentences in summary
             comprehensive: Whether to use comprehensive processing
             **kwargs: Additional arguments
@@ -126,6 +127,11 @@ class EnhancedVideoSummarizer:
         Returns:
             Processing results
         """
+        # Check if input is a URL
+        if video_path.startswith(('http://', 'https://')):
+            return self.process_video_from_url(video_path, max_sentences, comprehensive, **kwargs)
+        
+        # Process local file
         if comprehensive:
             return self.process_video_comprehensive(
                 video_path, 
@@ -135,6 +141,83 @@ class EnhancedVideoSummarizer:
         else:
             # Fast processing without heavy ML models
             return self._fast_video_processing(video_path, max_sentences)
+    
+    def process_video_from_url(self, url: str, max_sentences: int = 5, 
+                              comprehensive: bool = False, **kwargs) -> Dict[str, Any]:
+        """
+        Process video from URL with automatic download.
+        
+        Args:
+            url: Video URL from any supported platform
+            max_sentences: Maximum sentences in summary
+            comprehensive: Whether to use comprehensive processing
+            **kwargs: Additional arguments
+            
+        Returns:
+            Processing results
+        """
+        try:
+            logger.info(f"Processing video from URL: {url}")
+            
+            # Initialize video source manager
+            video_manager = VideoSourceManager()
+            
+            # Validate URL
+            is_valid, message = video_manager.validate_url(url)
+            if not is_valid:
+                return {"success": False, "error": f"Invalid URL: {message}"}
+            
+            # Detect platform
+            platform = video_manager.detect_platform(url)
+            logger.info(f"Detected platform: {platform}")
+            
+            # Get video info
+            video_info = video_manager.get_platform_info(url)
+            if 'error' in video_info:
+                return {"success": False, "error": f"Error getting video info: {video_info['error']}"}
+            
+            # Download video
+            logger.info(f"Downloading video from {platform}...")
+            video_path = video_manager.download_video(url)
+            
+            if not video_path:
+                return {"success": False, "error": "Failed to download video"}
+            
+            logger.info(f"Video downloaded successfully: {video_path}")
+            
+            # Process the downloaded video
+            if comprehensive:
+                results = self.process_video_comprehensive(
+                    video_path, 
+                    max_sentences=max_sentences,
+                    include_visual_analysis=kwargs.get('visual_analysis', True)
+                )
+            else:
+                results = self._fast_video_processing(video_path, max_sentences)
+            
+            # Add platform information to results
+            if results.get("success"):
+                results["platform_info"] = {
+                    "platform": platform,
+                    "original_url": url,
+                    "video_title": video_info.get('title', 'Unknown'),
+                    "uploader": video_info.get('uploader', 'Unknown'),
+                    "duration": video_info.get('duration', 0),
+                    "view_count": video_info.get('view_count', 0)
+                }
+            
+            # Clean up downloaded file
+            try:
+                os.unlink(video_path)
+                logger.info(f"Cleaned up downloaded file: {video_path}")
+            except Exception as e:
+                logger.warning(f"Could not clean up file {video_path}: {e}")
+            
+            return results
+            
+        except Exception as e:
+            logger.error(f"Error processing video from URL: {str(e)}")
+            return {"success": False, "error": str(e)}
     
     def process_audio(self, audio_path: str, max_sentences: int = 5, **kwargs) -> Dict[str, Any]:
         """
@@ -237,7 +320,7 @@ class EnhancedVideoSummarizer:
                     # Try to get real speech recognition
                     if self.speech_recognizer:
                         logger.info("Attempting real speech recognition...")
-                        transcript_result = self.speech_recognizer.transcribe(audio_path)
+                        transcript_result = self.speech_recognizer.transcribe_audio(audio_path)
                         if transcript_result and 'text' in transcript_result and transcript_result['text'].strip():
                             transcript_text = transcript_result['text']
                             logger.info(f"Real speech recognition successful: {len(transcript_text)} characters")
@@ -425,7 +508,7 @@ class EnhancedVideoSummarizer:
                     
                     if self.speech_recognizer:
                         logger.info("Attempting real speech recognition...")
-                        transcript_result = self.speech_recognizer.transcribe(audio_path)
+                        transcript_result = self.speech_recognizer.transcribe_audio(audio_path)
                         if transcript_result and 'text' in transcript_result and transcript_result['text'].strip():
                             intelligent_content = transcript_result['text']
                             logger.info(f"Real speech recognition successful: {len(intelligent_content)} characters")
@@ -1167,7 +1250,7 @@ class EnhancedVideoSummarizer:
 def main():
     """Main CLI entry point for enhanced video summarizer."""
     parser = argparse.ArgumentParser(description="Enhanced AI-Powered Video Summarizer with Complete ML Suite")
-    parser.add_argument("input_file", help="Path to input video, audio, or transcript file")
+    parser.add_argument("input_file", help="Path to input video, audio, or transcript file, or URL from any supported platform")
     parser.add_argument("-o", "--output", help="Output name for generated files")
     parser.add_argument("-s", "--sentences", type=int, help="Maximum number of sentences in summary")
     parser.add_argument("-t", "--type", choices=["video", "audio", "transcript"], 
@@ -1223,49 +1306,88 @@ def main():
         
     else:
         # Single file processing
-        input_path = Path(args.input_file)
-        if not input_path.exists():
-            print(f"Error: File not found: {input_path}")
-            sys.exit(1)
+        input_file = args.input_file
         
-        # Determine file type
-        file_type = args.type
-        if file_type is None:
-            if input_path.suffix.lower() in ['.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv']:
-                file_type = "video"
-            elif input_path.suffix.lower() in ['.wav', '.mp3', '.m4a', '.flac']:
-                file_type = "audio"
-            elif input_path.suffix.lower() in ['.txt']:
-                file_type = "transcript"
-            else:
-                print(f"Error: Unsupported file type: {input_path.suffix}")
-                sys.exit(1)
-        
-        print(f"Processing {file_type} file: {input_path}")
-        
-        if args.comprehensive and file_type == "video":
-            # Comprehensive processing
-            results = summarizer.process_video_comprehensive(
-                str(input_path),
-                args.output,
-                args.sentences,
-                include_visual_analysis=args.visual_analysis
-            )
-        else:
-            # Basic processing (fallback to original functionality)
-            from main import VideoSummarizer
-            basic_summarizer = VideoSummarizer()
+        # Check if input is a URL
+        if input_file.startswith(('http://', 'https://')):
+            print(f"Processing video from URL: {input_file}")
             
-            if file_type == "video":
-                results = basic_summarizer.process_video(str(input_path), args.output, args.sentences)
-            elif file_type == "audio":
-                results = basic_summarizer.process_audio(str(input_path), args.output, args.sentences)
-            elif file_type == "transcript":
-                results = basic_summarizer.process_transcript(str(input_path), args.output, args.sentences)
+            # Initialize video source manager for validation
+            video_manager = VideoSourceManager()
+            is_valid, message = video_manager.validate_url(input_file)
+            
+            if not is_valid:
+                print(f"Error: {message}")
+                sys.exit(1)
+            
+            platform = video_manager.detect_platform(input_file)
+            print(f"Detected platform: {platform}")
+            
+            # Process video from URL
+            if args.comprehensive:
+                results = summarizer.process_video_comprehensive(
+                    input_file,
+                    args.output,
+                    args.sentences,
+                    include_visual_analysis=args.visual_analysis
+                )
+            else:
+                results = summarizer.process_video(input_file, args.sentences, comprehensive=False)
+        else:
+            # Process local file
+            input_path = Path(input_file)
+            if not input_path.exists():
+                print(f"Error: File not found: {input_path}")
+                sys.exit(1)
+            
+            # Determine file type
+            file_type = args.type
+            if file_type is None:
+                if input_path.suffix.lower() in ['.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv']:
+                    file_type = "video"
+                elif input_path.suffix.lower() in ['.wav', '.mp3', '.m4a', '.flac']:
+                    file_type = "audio"
+                elif input_path.suffix.lower() in ['.txt']:
+                    file_type = "transcript"
+                else:
+                    print(f"Error: Unsupported file type: {input_path.suffix}")
+                    sys.exit(1)
+            
+            print(f"Processing {file_type} file: {input_path}")
+            
+            if args.comprehensive and file_type == "video":
+                # Comprehensive processing
+                results = summarizer.process_video_comprehensive(
+                    str(input_path),
+                    args.output,
+                    args.sentences,
+                    include_visual_analysis=args.visual_analysis
+                )
+            else:
+                # Basic processing (fallback to original functionality)
+                from main import VideoSummarizer
+                basic_summarizer = VideoSummarizer()
+                
+                if file_type == "video":
+                    results = basic_summarizer.process_video(str(input_path), args.output, args.sentences)
+                elif file_type == "audio":
+                    results = basic_summarizer.process_audio(str(input_path), args.output, args.sentences)
+                elif file_type == "transcript":
+                    results = basic_summarizer.process_transcript(str(input_path), args.output, args.sentences)
         
         # Display results
         if results["success"]:
             print("\n=== PROCESSING COMPLETED ===")
+            
+            # Show platform info if available
+            if "platform_info" in results:
+                platform_info = results["platform_info"]
+                print(f"Platform: {platform_info['platform'].title()}")
+                print(f"Video: {platform_info['video_title']}")
+                print(f"Uploader: {platform_info['uploader']}")
+                print(f"Duration: {platform_info['duration']} seconds")
+                print(f"Views: {platform_info['view_count']:,}")
+                print()
             
             if args.comprehensive:
                 print(f"Summary: {results['summary']['abstractive_summary']}")

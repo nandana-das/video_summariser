@@ -79,3 +79,142 @@
 2025-09-30 21:53:03,747 - ml_main - INFO - Audio extracted successfully: temp\Computer Basics What Is a Computer_audio.wav
 2025-09-30 21:53:03,748 - ml_main - WARNING - No speech recognizer available - using basic audio analysis
 2025-09-30 21:53:35,258 - ml_main - INFO - Created basic audio-based description: 288 characters
+2025-10-01 13:24:46,621 - ml_models.mlflow_integration - INFO - Using MLflow server at http://localhost:5000
+2025-10-01 13:24:49,807 - ml_models.mlflow_integration - INFO - Using existing experiment: video_summarizer
+2025-10-01 13:24:49,807 - ml_models.mlflow_integration - INFO - MLflowManager initialized with experiment: video_summarizer
+2025-10-01 13:24:49,808 - ml_models.model_serving - INFO - ModelRegistry initialized at model_registry
+2025-10-01 13:24:50,250 - ml_models.model_evaluation - INFO - ModelEvaluator initialized on cpu
+2025-10-01 13:24:50,250 - ml_main - INFO - EnhancedVideoSummarizer initialized on cpu
+2025-10-01 13:24:50,250 - ml_main - INFO - Starting fast video processing: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 13:24:50,251 - ml_models.data_preprocessing - INFO - Extracting audio from video: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 13:24:53,492 - ml_models.data_preprocessing - WARNING - Librosa extraction failed: 
+2025-10-01 13:24:55,095 - ml_models.data_preprocessing - INFO - Audio extracted successfully with moviepy: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 13:24:55,096 - ml_main - INFO - Audio extracted successfully: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 13:24:55,096 - ml_main - WARNING - No speech recognizer available - using basic audio analysis
+2025-10-01 13:24:57,304 - ml_main - INFO - Created basic audio-based description: 288 characters
+2025-10-01 13:29:55,468 - ml_models.mlflow_integration - INFO - Using MLflow server at http://localhost:5000
+2025-10-01 13:29:58,839 - ml_models.mlflow_integration - INFO - Using existing experiment: video_summarizer
+2025-10-01 13:29:58,839 - ml_models.mlflow_integration - INFO - MLflowManager initialized with experiment: video_summarizer
+2025-10-01 13:29:58,840 - ml_models.model_serving - INFO - ModelRegistry initialized at model_registry
+2025-10-01 13:29:59,151 - ml_models.model_evaluation - INFO - ModelEvaluator initialized on cpu
+2025-10-01 13:29:59,151 - ml_main - INFO - EnhancedVideoSummarizer initialized on cpu
+2025-10-01 13:29:59,151 - ml_main - INFO - Starting fast video processing: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 13:29:59,152 - ml_models.data_preprocessing - INFO - Extracting audio from video: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 13:30:00,863 - ml_models.data_preprocessing - WARNING - Librosa extraction failed: 
+2025-10-01 13:30:02,662 - ml_models.data_preprocessing - INFO - Audio extracted successfully with moviepy: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 13:30:02,663 - ml_main - INFO - Audio extracted successfully: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 13:30:02,664 - ml_main - WARNING - No speech recognizer available - using basic audio analysis
+2025-10-01 13:30:04,335 - ml_main - INFO - Created basic audio-based description: 288 characters
+2025-10-01 13:31:21,877 - ml_models.mlflow_integration - INFO - Using MLflow server at http://localhost:5000
+2025-10-01 13:31:25,435 - ml_models.mlflow_integration - INFO - Using existing experiment: video_summarizer
+2025-10-01 13:31:25,435 - ml_models.mlflow_integration - INFO - MLflowManager initialized with experiment: video_summarizer
+2025-10-01 13:31:25,437 - ml_models.model_serving - INFO - ModelRegistry initialized at model_registry
+2025-10-01 13:31:25,438 - ml_models.model_evaluation - INFO - ModelEvaluator initialized on cpu
+2025-10-01 13:31:25,438 - ml_main - INFO - EnhancedVideoSummarizer initialized on cpu
+2025-10-01 13:31:25,438 - ml_main - INFO - Loading ML models...
+2025-10-01 13:31:25,439 - ml_models.transformer_summarizer - INFO - Loading model: facebook/bart-large-cnn
+2025-10-01 13:31:28,248 - ml_models.advanced_speech_recognition - INFO - Loaded Whisper model: base
+2025-10-01 13:31:28,249 - ml_models.advanced_speech_recognition - INFO - AdvancedSpeechRecognizer initialized with whisper-base on cpu
+2025-10-01 13:31:33,621 - ml_models.transformer_summarizer - INFO - Models loaded successfully
+2025-10-01 13:31:33,622 - ml_models.transformer_summarizer - INFO - TransformerSummarizer initialized with facebook/bart-large-cnn on cpu
+2025-10-01 13:31:33,622 - ml_main - INFO - Loaded summarizer: facebook/bart-large-cnn
+2025-10-01 13:31:34,964 - ml_models.advanced_speech_recognition - INFO - Loaded Whisper model: base
+2025-10-01 13:31:34,965 - ml_models.advanced_speech_recognition - INFO - AdvancedSpeechRecognizer initialized with whisper-base on cpu
+2025-10-01 13:31:34,965 - ml_main - INFO - Loaded speech recognizer: whisper-base
+2025-10-01 13:31:34,966 - ml_models.video_analysis - WARNING - YOLO not available, using alternative object detection
+2025-10-01 13:31:34,967 - ml_models.video_analysis - INFO - VideoAnalyzer initialized on cpu
+2025-10-01 13:31:34,967 - ml_main - INFO - Loaded video analyzer
+2025-10-01 13:31:34,967 - ml_models.model_training - INFO - ModelTrainer initialized with facebook/bart-large-cnn on cpu
+2025-10-01 13:31:34,967 - ml_main - INFO - Loaded model trainer
+2025-10-01 13:31:34,967 - ml_main - INFO - All models loaded successfully
+2025-10-01 13:31:34,967 - ml_main - INFO - Starting fast video processing: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 13:31:34,968 - ml_models.data_preprocessing - INFO - Extracting audio from video: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 13:31:34,985 - ml_models.data_preprocessing - WARNING - Librosa extraction failed: 
+2025-10-01 13:31:37,274 - ml_models.data_preprocessing - INFO - Audio extracted successfully with moviepy: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 13:31:37,275 - ml_main - INFO - Audio extracted successfully: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 13:31:37,276 - ml_main - INFO - Attempting real speech recognition...
+2025-10-01 13:31:37,276 - ml_main - WARNING - Audio processing failed: 'AdvancedSpeechRecognizer' object has no attribute 'transcribe'
+2025-10-01 13:31:37,276 - ml_main - INFO - No real transcript available, attempting intelligent content analysis...
+2025-10-01 13:33:21,207 - ml_models.mlflow_integration - INFO - Using MLflow server at http://localhost:5000
+2025-10-01 13:33:24,540 - ml_models.mlflow_integration - INFO - Using existing experiment: video_summarizer
+2025-10-01 13:33:24,540 - ml_models.mlflow_integration - INFO - MLflowManager initialized with experiment: video_summarizer
+2025-10-01 13:33:24,541 - ml_models.model_serving - INFO - ModelRegistry initialized at model_registry
+2025-10-01 13:33:24,806 - ml_models.model_evaluation - INFO - ModelEvaluator initialized on cpu
+2025-10-01 13:33:24,807 - ml_main - INFO - EnhancedVideoSummarizer initialized on cpu
+2025-10-01 13:33:24,807 - ml_main - INFO - Loading ML models...
+2025-10-01 13:33:24,807 - ml_models.transformer_summarizer - INFO - Loading model: facebook/bart-large-cnn
+2025-10-01 13:33:31,843 - ml_models.transformer_summarizer - INFO - Models loaded successfully
+2025-10-01 13:33:31,843 - ml_models.transformer_summarizer - INFO - TransformerSummarizer initialized with facebook/bart-large-cnn on cpu
+2025-10-01 13:33:31,843 - ml_main - INFO - Loaded summarizer: facebook/bart-large-cnn
+2025-10-01 13:33:33,384 - ml_models.advanced_speech_recognition - INFO - Loaded Whisper model: base
+2025-10-01 13:33:33,385 - ml_models.advanced_speech_recognition - INFO - AdvancedSpeechRecognizer initialized with whisper-base on cpu
+2025-10-01 13:33:33,385 - ml_main - INFO - Loaded speech recognizer: whisper-base
+2025-10-01 13:33:33,387 - ml_models.video_analysis - WARNING - YOLO not available, using alternative object detection
+2025-10-01 13:33:33,387 - ml_models.video_analysis - INFO - VideoAnalyzer initialized on cpu
+2025-10-01 13:33:33,387 - ml_main - INFO - Loaded video analyzer
+2025-10-01 13:33:33,387 - ml_models.model_training - INFO - ModelTrainer initialized with facebook/bart-large-cnn on cpu
+2025-10-01 13:33:33,387 - ml_main - INFO - Loaded model trainer
+2025-10-01 13:33:33,387 - ml_main - INFO - All models loaded successfully
+2025-10-01 13:33:33,388 - ml_main - INFO - Starting fast video processing: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 13:33:33,388 - ml_models.data_preprocessing - INFO - Extracting audio from video: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 13:33:34,801 - ml_models.data_preprocessing - WARNING - Librosa extraction failed: 
+2025-10-01 13:33:36,440 - ml_models.data_preprocessing - INFO - Audio extracted successfully with moviepy: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 13:33:36,441 - ml_main - INFO - Audio extracted successfully: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 13:33:36,441 - ml_main - INFO - Attempting real speech recognition...
+2025-10-01 13:33:36,441 - ml_main - WARNING - Audio processing failed: 'AdvancedSpeechRecognizer' object has no attribute 'transcribe'
+2025-10-01 13:33:36,441 - ml_main - INFO - No real transcript available, attempting intelligent content analysis...
+2025-10-01 13:33:39,254 - ml_main - INFO - Created intelligent content analysis: 121 characters
+2025-10-01 15:31:45,843 - ml_models.mlflow_integration - INFO - Using MLflow server at http://localhost:5000
+2025-10-01 15:31:49,457 - ml_models.mlflow_integration - INFO - Using existing experiment: video_summarizer
+2025-10-01 15:31:49,457 - ml_models.mlflow_integration - INFO - MLflowManager initialized with experiment: video_summarizer
+2025-10-01 15:31:49,459 - ml_models.model_serving - INFO - ModelRegistry initialized at model_registry
+2025-10-01 15:31:49,900 - ml_models.model_evaluation - INFO - ModelEvaluator initialized on cpu
+2025-10-01 15:31:49,901 - ml_main - INFO - EnhancedVideoSummarizer initialized on cpu
+2025-10-01 15:31:49,902 - ml_main - INFO - Loading ML models...
+2025-10-01 15:31:49,902 - ml_models.transformer_summarizer - INFO - Loading model: facebook/bart-large-cnn
+2025-10-01 15:31:57,825 - ml_models.transformer_summarizer - INFO - Models loaded successfully
+2025-10-01 15:31:57,826 - ml_models.transformer_summarizer - INFO - TransformerSummarizer initialized with facebook/bart-large-cnn on cpu
+2025-10-01 15:31:57,826 - ml_main - INFO - Loaded summarizer: facebook/bart-large-cnn
+2025-10-01 15:31:59,898 - ml_models.advanced_speech_recognition - INFO - Loaded Whisper model: base
+2025-10-01 15:31:59,899 - ml_models.advanced_speech_recognition - INFO - AdvancedSpeechRecognizer initialized with whisper-base on cpu
+2025-10-01 15:31:59,899 - ml_main - INFO - Loaded speech recognizer: whisper-base
+2025-10-01 15:31:59,901 - ml_models.video_analysis - WARNING - YOLO not available, using alternative object detection
+2025-10-01 15:31:59,902 - ml_models.video_analysis - INFO - VideoAnalyzer initialized on cpu
+2025-10-01 15:31:59,903 - ml_main - INFO - Loaded video analyzer
+2025-10-01 15:31:59,903 - ml_models.model_training - INFO - ModelTrainer initialized with facebook/bart-large-cnn on cpu
+2025-10-01 15:31:59,904 - ml_main - INFO - Loaded model trainer
+2025-10-01 15:31:59,904 - ml_main - INFO - All models loaded successfully
+2025-10-01 15:31:59,904 - ml_main - INFO - Starting fast video processing: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 15:31:59,905 - ml_models.data_preprocessing - INFO - Extracting audio from video: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 15:32:02,326 - ml_models.data_preprocessing - WARNING - Librosa extraction failed: 
+2025-10-01 15:32:04,274 - ml_models.data_preprocessing - INFO - Audio extracted successfully with moviepy: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 15:32:04,274 - ml_main - INFO - Audio extracted successfully: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 15:32:04,275 - ml_main - INFO - Attempting real speech recognition...
+2025-10-01 15:32:40,468 - ml_main - INFO - Real speech recognition successful: 1978 characters
+2025-10-01 15:53:22,184 - ml_models.mlflow_integration - INFO - Using MLflow server at http://localhost:5000
+2025-10-01 15:53:25,328 - ml_models.mlflow_integration - INFO - Using existing experiment: video_summarizer
+2025-10-01 15:53:25,328 - ml_models.mlflow_integration - INFO - MLflowManager initialized with experiment: video_summarizer
+2025-10-01 15:53:25,329 - ml_models.model_serving - INFO - ModelRegistry initialized at model_registry
+2025-10-01 15:53:25,331 - ml_models.model_evaluation - INFO - ModelEvaluator initialized on cpu
+2025-10-01 15:53:25,331 - ml_main - INFO - EnhancedVideoSummarizer initialized on cpu
+2025-10-01 15:53:25,332 - ml_main - INFO - Loading ML models...
+2025-10-01 15:53:25,332 - ml_models.transformer_summarizer - INFO - Loading model: facebook/bart-large-cnn
+2025-10-01 15:53:32,375 - ml_models.transformer_summarizer - INFO - Models loaded successfully
+2025-10-01 15:53:32,376 - ml_models.transformer_summarizer - INFO - TransformerSummarizer initialized with facebook/bart-large-cnn on cpu
+2025-10-01 15:53:32,377 - ml_main - INFO - Loaded summarizer: facebook/bart-large-cnn
+2025-10-01 15:53:33,558 - ml_models.advanced_speech_recognition - INFO - Loaded Whisper model: base
+2025-10-01 15:53:33,559 - ml_models.advanced_speech_recognition - INFO - AdvancedSpeechRecognizer initialized with whisper-base on cpu
+2025-10-01 15:53:33,560 - ml_main - INFO - Loaded speech recognizer: whisper-base
+2025-10-01 15:53:33,562 - ml_models.video_analysis - WARNING - YOLO not available, using alternative object detection
+2025-10-01 15:53:33,563 - ml_models.video_analysis - INFO - VideoAnalyzer initialized on cpu
+2025-10-01 15:53:33,563 - ml_main - INFO - Loaded video analyzer
+2025-10-01 15:53:33,563 - ml_models.model_training - INFO - ModelTrainer initialized with facebook/bart-large-cnn on cpu
+2025-10-01 15:53:33,564 - ml_main - INFO - Loaded model trainer
+2025-10-01 15:53:33,564 - ml_main - INFO - All models loaded successfully
+2025-10-01 15:53:33,565 - ml_main - INFO - Starting fast video processing: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 15:53:33,565 - ml_models.data_preprocessing - INFO - Extracting audio from video: temp\Computer Basics： What Is a Computer？.mp4
+2025-10-01 15:53:33,584 - ml_models.data_preprocessing - WARNING - Librosa extraction failed: 
+2025-10-01 15:53:35,426 - ml_models.data_preprocessing - INFO - Audio extracted successfully with moviepy: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 15:53:35,427 - ml_main - INFO - Audio extracted successfully: temp\Computer Basics What Is a Computer_audio.wav
+2025-10-01 15:53:35,428 - ml_main - INFO - Attempting real speech recognition...
+2025-10-01 15:53:55,319 - ml_main - INFO - Real speech recognition successful: 1978 characters

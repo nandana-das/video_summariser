@@ -3,12 +3,14 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Multi-Platform](https://img.shields.io/badge/Platforms-1000+-green.svg)](https://github.com/yt-dlp/yt-dlp)
 
-An advanced AI-powered video summarization tool that extracts audio from videos, generates transcripts using speech recognition, and creates intelligent summaries with action items, keywords, and named entity extraction.
+An advanced AI-powered video summarization tool that supports **1000+ video platforms** including YouTube, Vimeo, Instagram, TikTok, Facebook, Twitter, Twitch, and many more. Extract audio from videos, generate transcripts using speech recognition, and create intelligent summaries with action items, keywords, and named entity extraction.
 
 ## ✨ Features
 
 ### 🎯 Core Functionality
+- **🌐 Multi-Platform Support**: Process videos from 1000+ platforms including YouTube, Vimeo, Instagram, TikTok, Facebook, Twitter, Twitch, Dailymotion, Bilibili, Rumble, Odysee, LBRY, and many more!
 - **Video Processing**: Extract audio from multiple video formats (MP4, AVI, MOV, MKV, WMV, FLV)
 - **Speech Recognition**: High-accuracy transcription using Vosk speech recognition
 - **Intelligent Summarization**: Advanced NLP-based text summarization with multiple algorithms
@@ -29,6 +31,27 @@ An advanced AI-powered video summarization tool that extracts audio from videos,
 - **Content Analysis**: Detailed statistics about processed content
 - **Visualization**: Interactive charts and graphs for data insights
 - **Export Options**: Download results in multiple formats
+
+## 🌐 Supported Platforms
+
+This tool supports **1000+ video platforms** through yt-dlp integration, including:
+
+### Popular Platforms
+- **📺 YouTube** - The world's largest video platform
+- **🎬 Vimeo** - High-quality video hosting and sharing
+- **📷 Instagram** - Photo and video sharing platform
+- **🎵 TikTok** - Short-form video platform
+- **👥 Facebook** - Social media video content
+- **🐦 Twitter/X** - Social media video posts
+- **🎮 Twitch** - Live streaming and gaming content
+
+### Additional Platforms
+- **🎥 Dailymotion** - Video sharing platform
+- **🇨🇳 Bilibili** - Chinese video platform
+- **⚡ Rumble** - Video platform and creator network
+- **🔍 Odysee** - Decentralized video platform
+- **🔗 LBRY** - Decentralized content platform
+- **And 1000+ more!** - Full list available in yt-dlp documentation
 
 ## 🛠️ Installation
 
@@ -68,31 +91,80 @@ streamlit run streamlit_app.py
 ```
 
 ### Command Line Interface
+
+#### Process Videos from URLs
+```bash
+# YouTube video
+python ml_main.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+# Vimeo video
+python ml_main.py "https://vimeo.com/123456789" --comprehensive
+
+# Instagram video
+python ml_main.py "https://www.instagram.com/p/ABC123/" -s 10
+
+# TikTok video
+python ml_main.py "https://www.tiktok.com/@user/video/1234567890" --comprehensive
+
+# Facebook video
+python ml_main.py "https://www.facebook.com/watch/?v=123456789"
+
+# Twitter video
+python ml_main.py "https://twitter.com/user/status/1234567890"
+
+# Twitch video
+python ml_main.py "https://www.twitch.tv/videos/123456789" --comprehensive
+```
+
+#### Process Local Files
 ```bash
 # Process a video file
-python main.py video.mp4
+python ml_main.py video.mp4
 
 # Process an audio file
-python main.py audio.wav -t audio
+python ml_main.py audio.wav -t audio
 
 # Process a transcript
-python main.py transcript.txt -t transcript
+python ml_main.py transcript.txt -t transcript
 
 # Customize summary length
-python main.py video.mp4 -s 10
+python ml_main.py video.mp4 -s 10
 
 # Specify output name
-python main.py video.mp4 -o my_meeting
+python ml_main.py video.mp4 -o my_meeting
 ```
 
 ### Python API
+
+#### Multi-Platform Video Processing
+```python
+from ml_main import EnhancedVideoSummarizer
+
+# Initialize the enhanced summarizer
+summarizer = EnhancedVideoSummarizer()
+summarizer.load_models()
+
+# Process video from any supported platform
+url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+result = summarizer.process_video(url, max_sentences=5, comprehensive=True)
+
+if result["success"]:
+    print(f"Summary: {result['summary_data']['summary']}")
+    print(f"Platform: {result['platform_info']['platform']}")
+    print(f"Video Title: {result['platform_info']['video_title']}")
+    print(f"Action Items: {result['summary_data']['action_items']}")
+else:
+    print(f"Error: {result['error']}")
+```
+
+#### Local File Processing
 ```python
 from main import VideoSummarizer
 
-# Initialize the summarizer
+# Initialize the basic summarizer
 summarizer = VideoSummarizer()
 
-# Process a video
+# Process a local video file
 results = summarizer.process_video("meeting.mp4")
 
 # Access results
