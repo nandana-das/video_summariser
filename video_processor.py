@@ -155,9 +155,12 @@ class VideoProcessor:
             
             # Create temporary audio file in temp directory
             import tempfile
+            import time
             temp_dir = tempfile.gettempdir()
             video_name = os.path.basename(video_path).rsplit('.', 1)[0]
-            audio_path = os.path.join(temp_dir, f"{video_name}_audio.wav")
+            # Add timestamp to avoid conflicts
+            timestamp = int(time.time() * 1000)
+            audio_path = os.path.join(temp_dir, f"{video_name}_{timestamp}_audio.wav")
             
             logger.info(f"Creating audio file at: {audio_path}")
             
@@ -203,23 +206,40 @@ class VideoProcessor:
                 logger.error(f"Audio file not found: {audio_path}")
                 return self._fallback_transcription()
             
+            # Check file size
+            file_size = os.path.getsize(audio_path)
+            logger.info(f"Audio file size: {file_size} bytes")
+            
             if self.whisper_model is None:
                 logger.warning("Whisper model not available, using fallback")
                 return self._fallback_transcription()
             
+            # Convert to absolute path for Whisper
+            abs_audio_path = os.path.abspath(audio_path)
+            logger.info(f"Using absolute path for Whisper: {abs_audio_path}")
+            
+            # Verify the absolute path exists
+            if not os.path.exists(abs_audio_path):
+                logger.error(f"Absolute audio file not found: {abs_audio_path}")
+                return self._fallback_transcription()
+            
             # Transcribe using Whisper
-            result = self.whisper_model.transcribe(audio_path)
+            logger.info("Starting Whisper transcription...")
+            result = self.whisper_model.transcribe(abs_audio_path)
             transcript = result["text"].strip()
             
             if not transcript:
                 logger.warning("Empty transcript from Whisper, using fallback")
                 return self._fallback_transcription()
             
-            logger.info(f"Transcription completed: {len(transcript)} characters")
+            logger.info(f"Whisper transcription completed: {len(transcript)} characters")
+            logger.info(f"First 200 chars of transcript: {transcript[:200]}...")
             return transcript
             
         except Exception as e:
             logger.error(f"Error transcribing audio: {e}")
+            logger.error(f"Audio path was: {audio_path}")
+            logger.error(f"Absolute path was: {os.path.abspath(audio_path) if audio_path else 'None'}")
             return self._fallback_transcription()
     
     def _fallback_transcription(self) -> str:
