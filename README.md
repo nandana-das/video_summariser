@@ -82,6 +82,12 @@ pip install -e ".[dev,web,nlp]"
 python -m spacy download en_core_web_sm
 ```
 
+## 🌐 Live Demo
+
+**Try the app online**: [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://yourusername-video-summariser-app-xxxxx.streamlit.app/)
+
+*Replace `yourusername` with your GitHub username after deployment*
+
 ## 🚀 Quick Start
 
 ### Web Interface
@@ -344,6 +350,37 @@ pytest tests/test_summarizer.py
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## 🚀 Deployment
+
+### Deploy to Streamlit Cloud (Recommended)
+
+1. **Fork this repository** to your GitHub account
+2. **Go to [Streamlit Cloud](https://share.streamlit.io/)**
+3. **Click "New app"**
+4. **Select your repository**: `yourusername/video_summariser`
+5. **Main file path**: `streamlit_app.py`
+6. **Click "Deploy!"**
+
+Your app will be live at: `https://yourusername-video-summariser-app-xxxxx.streamlit.app/`
+
+### Deploy to Heroku
+
+1. **Create a `Procfile`**:
+   ```
+   web: streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0
+   ```
+
+2. **Create a `runtime.txt`**:
+   ```
+   python-3.9.18
+   ```
+
+3. **Deploy**:
+   ```bash
+   heroku create your-app-name
+   git push heroku main
+   ```
 
 ## 📄 License
 

@@ -880,7 +880,13 @@ def main():
                 
                 st.markdown("### 📄 Full Transcript")
                 with st.expander("View Full Transcript", expanded=False):
-                    st.write(summary_data['transcript'])
+                    st.text_area(
+                        "Transcript", 
+                        value=summary_data['transcript'], 
+                        height=300,
+                        disabled=True,
+                        help="Full transcript of the video content"
+                    )
             
             with tab2:
                 st.markdown("### 🎯 Action Items")

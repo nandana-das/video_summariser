@@ -238,18 +238,20 @@ class VideoSourceManager:
             # Get platform-specific config
             config = self.PLATFORM_CONFIGS.get(platform, self.PLATFORM_CONFIGS['youtube'])
             
-            # Prepare output template
-            if custom_filename:
-                # Remove file extension if present
-                custom_filename = Path(custom_filename).stem
-                outtmpl = str(self.output_dir / f"{custom_filename}.%(ext)s")
-            else:
-                outtmpl = str(self.output_dir / '%(title)s.%(ext)s')
+            # Use a simple filename template to avoid special character issues
+            import time
+            timestamp = int(time.time())
+            outtmpl = str(self.output_dir / f"video_{timestamp}.%(ext)s")
+            
+            # Ensure the output directory exists
+            self.output_dir.mkdir(parents=True, exist_ok=True)
             
             # Configure yt-dlp options
             ydl_opts = {
                 'outtmpl': outtmpl,
                 'noplaylist': True,
+                'no_warnings': False,
+                'ignoreerrors': False,
                 **config
             }
             
@@ -285,7 +287,27 @@ class VideoSourceManager:
                 
         except Exception as e:
             logger.error(f"Error downloading video: {str(e)}")
-            return None
+            # Try with an even simpler filename as fallback
+            try:
+                logger.info("Trying fallback download with simpler filename...")
+                fallback_outtmpl = str(self.output_dir / "video.%(ext)s")
+                ydl_opts['outtmpl'] = fallback_outtmpl
+                
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([url])
+                    
+                    # Find the downloaded file
+                    for file in self.output_dir.iterdir():
+                        if file.suffix.lower() in ['.mp4', '.webm', '.mkv', '.avi', '.mov', '.flv']:
+                            logger.info(f"Video downloaded successfully with fallback: {file}")
+                            return str(file)
+                    
+                    logger.error("Fallback download also failed")
+                    return None
+                    
+            except Exception as fallback_error:
+                logger.error(f"Fallback download also failed: {str(fallback_error)}")
+                return None
     
     def get_supported_platforms(self) -> List[str]:
         """
@@ -398,6 +420,20 @@ class VideoSourceManager:
                     logger.info(f"Cleaned up old file: {file}")
                 except Exception as e:
                     logger.warning(f"Could not delete file {file}: {e}")
+    
+    def _sanitize_filename(self, filename: str) -> str:
+        """Sanitize filename by removing/replacing invalid characters."""
+        import re
+        # Replace invalid characters with underscores
+        sanitized = re.sub(r'[<>:"/\\|?*]', '_', filename)
+        # Replace multiple spaces with single space
+        sanitized = re.sub(r'\s+', ' ', sanitized)
+        # Remove leading/trailing spaces and dots
+        sanitized = sanitized.strip(' .')
+        # Limit length to avoid filesystem issues
+        if len(sanitized) > 100:
+            sanitized = sanitized[:100]
+        return sanitized
 
 
 def create_video_source_manager(output_dir: str = "temp") -> VideoSourceManager:

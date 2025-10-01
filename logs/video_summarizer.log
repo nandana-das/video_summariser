@@ -218,3 +218,30 @@
 2025-10-01 15:53:35,427 - ml_main - INFO - Audio extracted successfully: temp\Computer Basics What Is a Computer_audio.wav
 2025-10-01 15:53:35,428 - ml_main - INFO - Attempting real speech recognition...
 2025-10-01 15:53:55,319 - ml_main - INFO - Real speech recognition successful: 1978 characters
+2025-10-01 16:11:56,886 - ml_models.mlflow_integration - INFO - Using MLflow server at http://localhost:5000
+2025-10-01 16:12:00,632 - ml_models.mlflow_integration - INFO - Using existing experiment: video_summarizer
+2025-10-01 16:12:00,632 - ml_models.mlflow_integration - INFO - MLflowManager initialized with experiment: video_summarizer
+2025-10-01 16:12:00,634 - ml_models.model_serving - INFO - ModelRegistry initialized at model_registry
+2025-10-01 16:12:00,966 - ml_models.model_evaluation - INFO - ModelEvaluator initialized on cpu
+2025-10-01 16:12:00,967 - ml_main - INFO - EnhancedVideoSummarizer initialized on cpu
+2025-10-01 16:12:00,968 - ml_main - INFO - Loading ML models...
+2025-10-01 16:12:00,969 - ml_models.transformer_summarizer - INFO - Loading model: facebook/bart-large-cnn
+2025-10-01 16:12:10,483 - ml_models.transformer_summarizer - INFO - Models loaded successfully
+2025-10-01 16:12:10,484 - ml_models.transformer_summarizer - INFO - TransformerSummarizer initialized with facebook/bart-large-cnn on cpu
+2025-10-01 16:12:10,484 - ml_main - INFO - Loaded summarizer: facebook/bart-large-cnn
+2025-10-01 16:12:12,414 - ml_models.advanced_speech_recognition - INFO - Loaded Whisper model: base
+2025-10-01 16:12:12,415 - ml_models.advanced_speech_recognition - INFO - AdvancedSpeechRecognizer initialized with whisper-base on cpu
+2025-10-01 16:12:12,416 - ml_main - INFO - Loaded speech recognizer: whisper-base
+2025-10-01 16:12:12,418 - ml_models.video_analysis - WARNING - YOLO not available, using alternative object detection
+2025-10-01 16:12:12,419 - ml_models.video_analysis - INFO - VideoAnalyzer initialized on cpu
+2025-10-01 16:12:12,420 - ml_main - INFO - Loaded video analyzer
+2025-10-01 16:12:12,420 - ml_models.model_training - INFO - ModelTrainer initialized with facebook/bart-large-cnn on cpu
+2025-10-01 16:12:12,421 - ml_main - INFO - Loaded model trainer
+2025-10-01 16:12:12,421 - ml_main - INFO - All models loaded successfully
+2025-10-01 16:12:12,422 - ml_main - INFO - Starting fast video processing: temp\video_1759315109.mp4
+2025-10-01 16:12:12,422 - ml_models.data_preprocessing - INFO - Extracting audio from video: temp\video_1759315109.mp4
+2025-10-01 16:12:14,044 - ml_models.data_preprocessing - WARNING - Librosa extraction failed: 
+2025-10-01 16:12:29,215 - ml_models.data_preprocessing - INFO - Audio extracted successfully with moviepy: temp\video_1759315109_audio.wav
+2025-10-01 16:12:29,216 - ml_main - INFO - Audio extracted successfully: temp\video_1759315109_audio.wav
+2025-10-01 16:12:29,217 - ml_main - INFO - Attempting real speech recognition...
+2025-10-01 16:15:40,613 - ml_main - INFO - Real speech recognition successful: 16455 characters
