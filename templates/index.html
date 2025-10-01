@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎥 AI Video Summarizer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="main-title">
+                    <i class="fas fa-video"></i>
+                    AI Video Summarizer
+                </h1>
+                <p class="subtitle">Transform any video into intelligent summaries</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="input-tabs">
+                    <button class="tab-btn active" data-tab="upload">
+                        <i class="fas fa-upload"></i>
+                        Upload Video
+                    </button>
+                    <button class="tab-btn" data-tab="url">
+                        <i class="fas fa-link"></i>
+                        Video URL
+                    </button>
+                </div>
+
+                <!-- Upload Tab -->
+                <div class="tab-content active" id="upload-tab">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h3>Drop your video here</h3>
+                            <p>or click to browse files</p>
+                            <input type="file" id="videoFile" accept="video/*" hidden>
+                            <button class="upload-btn" onclick="document.getElementById('videoFile').click()">
+                                Choose File
+                            </button>
+                        </div>
+                    </div>
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-details">
+                            <i class="fas fa-file-video"></i>
+                            <div class="file-text">
+                                <span class="file-name" id="fileName"></span>
+                                <span class="file-size" id="fileSize"></span>
+                            </div>
+                            <button class="remove-file" onclick="removeFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- URL Tab -->
+                <div class="tab-content" id="url-tab">
+                    <div class="url-input-group">
+                        <input type="url" id="videoUrl" placeholder="Paste video URL here (YouTube, Vimeo, Instagram, etc.)">
+                        <button class="url-btn" onclick="validateUrl()">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                    <div class="platform-cards" id="platformCards">
+                        <!-- Platform cards will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div class="settings-section">
+                    <div class="setting-group">
+                        <label for="maxSentences">Summary Length</label>
+                        <input type="range" id="maxSentences" min="3" max="20" value="5">
+                        <span class="range-value">5 sentences</span>
+                    </div>
+                    <div class="setting-group">
+                        <label for="processingMode">Processing Mode</label>
+                        <select id="processingMode">
+                            <option value="fast">⚡ Fast</option>
+                            <option value="comprehensive">🧠 Comprehensive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Process Button -->
+                <button class="process-btn" id="processBtn" onclick="processVideo()" disabled>
+                    <i class="fas fa-play"></i>
+                    Process Video
+                </button>
+            </section>
+
+            <!-- Loading Section -->
+            <section class="loading-section" id="loadingSection" style="display: none;">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <h3>Processing your video...</h3>
+                    <p>This may take a few minutes depending on video length</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <h2>📊 Analysis Results</h2>
+                    <div class="result-actions">
+                        <button class="action-btn" onclick="downloadResults()">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </button>
+                        <button class="action-btn" onclick="shareResults()">
+                            <i class="fas fa-share"></i>
+                            Share
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-content">
+                    <!-- Summary Tab -->
+                    <div class="result-tab active" id="summary-tab">
+                        <div class="summary-box">
+                            <h3>📝 AI-Generated Summary</h3>
+                            <div class="summary-text" id="summaryText"></div>
+                        </div>
+                    </div>
+
+                    <!-- Action Items Tab -->
+                    <div class="result-tab" id="actions-tab">
+                        <h3>🎯 Action Items</h3>
+                        <div class="action-items" id="actionItems"></div>
+                    </div>
+
+                    <!-- Keywords Tab -->
+                    <div class="result-tab" id="keywords-tab">
+                        <h3>🔑 Keywords & Topics</h3>
+                        <div class="keywords" id="keywords"></div>
+                    </div>
+
+                    <!-- Transcript Tab -->
+                    <div class="result-tab" id="transcript-tab">
+                        <h3>📄 Full Transcript</h3>
+                        <div class="transcript-box">
+                            <textarea id="transcriptText" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="summaryCount">0</div>
+                        <div class="stat-label">Summary Sentences</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="keywordCount">0</div>
+                        <div class="stat-label">Keywords</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="actionCount">0</div>
+                        <div class="stat-label">Action Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="compressionRatio">0%</div>
+                        <div class="stat-label">Compression</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 AI Video Summarizer. Built with ❤️ using Flask & Python.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
