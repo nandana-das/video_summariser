@@ -127,8 +127,11 @@ class VideoProcessor:
         try:
             logger.info(f"Extracting audio from: {video_path}")
             
-            # Create temporary audio file
-            audio_path = video_path.rsplit('.', 1)[0] + '_audio.wav'
+            # Create temporary audio file in temp directory
+            import tempfile
+            temp_dir = tempfile.gettempdir()
+            video_name = os.path.basename(video_path).rsplit('.', 1)[0]
+            audio_path = os.path.join(temp_dir, f"{video_name}_audio.wav")
             
             # Extract audio using moviepy
             video = mp.VideoFileClip(video_path)
@@ -143,8 +146,13 @@ class VideoProcessor:
             audio.close()
             video.close()
             
-            logger.info(f"Audio extracted: {audio_path}")
-            return audio_path
+            # Verify the file was created
+            if os.path.exists(audio_path):
+                logger.info(f"Audio extracted: {audio_path}")
+                return audio_path
+            else:
+                logger.error(f"Audio file was not created at {audio_path}")
+                return None
             
         except Exception as e:
             logger.error(f"Error extracting audio: {e}")
