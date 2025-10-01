@@ -6,13 +6,41 @@ import torch
 import numpy as np
 from typing import List, Dict, Any, Optional, Union, Tuple
 from pathlib import Path
-from transformers import (
-    AutoTokenizer, AutoModelForSeq2SeqLM, 
-    BartForConditionalGeneration, BartTokenizer,
-    T5ForConditionalGeneration, T5Tokenizer,
-    PegasusForConditionalGeneration, PegasusTokenizer,
-    pipeline, AutoModel, AutoConfig
-)
+try:
+    from transformers import (
+        AutoTokenizer, AutoModelForSeq2SeqLM, 
+        BartForConditionalGeneration, BartTokenizer,
+        T5ForConditionalGeneration, T5Tokenizer,
+        PegasusForConditionalGeneration, PegasusTokenizer,
+        pipeline, AutoModel, AutoConfig
+    )
+    TRANSFORMERS_AVAILABLE = True
+except ImportError as e:
+    print(f"Transformers import error: {e}")
+    TRANSFORMERS_AVAILABLE = False
+    # Create dummy classes to prevent errors
+    class AutoTokenizer:
+        pass
+    class AutoModelForSeq2SeqLM:
+        pass
+    class BartForConditionalGeneration:
+        pass
+    class BartTokenizer:
+        pass
+    class T5ForConditionalGeneration:
+        pass
+    class T5Tokenizer:
+        pass
+    class PegasusForConditionalGeneration:
+        pass
+    class PegasusTokenizer:
+        pass
+    class pipeline:
+        pass
+    class AutoModel:
+        pass
+    class AutoConfig:
+        pass
 try:
     from sentence_transformers import SentenceTransformer
     SENTENCE_TRANSFORMERS_AVAILABLE = True
@@ -80,6 +108,10 @@ class TransformerSummarizer:
     
     def _load_models(self):
         """Load the transformer model and tokenizer."""
+        if not TRANSFORMERS_AVAILABLE:
+            logger.error("Transformers library not available. Cannot load models.")
+            raise ImportError("Transformers library is required but not available.")
+        
         try:
             logger.info(f"Loading model: {self.model_name}")
             

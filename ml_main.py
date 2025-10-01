@@ -21,11 +21,42 @@ from config import (
 )
 
 # Import ML suite components
-from ml_models import (
-    TransformerSummarizer, AdvancedSpeechRecognizer, VideoAnalyzer,
-    MLflowManager, ModelTrainer, ModelEvaluator, InferenceServer,
-    ModelRegistry, AudioPreprocessor, VideoPreprocessor, TextPreprocessor
-)
+try:
+    from ml_models import (
+        TransformerSummarizer, AdvancedSpeechRecognizer, VideoAnalyzer,
+        MLflowManager, ModelTrainer, ModelEvaluator, InferenceServer,
+        ModelRegistry, AudioPreprocessor, VideoPreprocessor, TextPreprocessor
+    )
+    ADVANCED_MODELS_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"Advanced ML models not available: {e}")
+    ADVANCED_MODELS_AVAILABLE = False
+    # Create dummy classes
+    class TransformerSummarizer:
+        pass
+    class AdvancedSpeechRecognizer:
+        pass
+    class VideoAnalyzer:
+        pass
+    class MLflowManager:
+        pass
+    class ModelTrainer:
+        pass
+    class ModelEvaluator:
+        pass
+    class InferenceServer:
+        pass
+    class ModelRegistry:
+        pass
+    class AudioPreprocessor:
+        pass
+    class VideoPreprocessor:
+        pass
+    class TextPreprocessor:
+        pass
+
+# Import simple fallback summarizer
+from ml_models.simple_summarizer import SimpleSummarizer
 
 logger = setup_logger(__name__)
 
@@ -43,21 +74,37 @@ class EnhancedVideoSummarizer:
         self.device = self._get_device(device)
         self.use_mlflow = use_mlflow
         
-        # Initialize ML components
-        self.mlflow_manager = MLflowManager() if use_mlflow else None
-        self.model_registry = ModelRegistry()
+        # Initialize ML components (if available)
+        if ADVANCED_MODELS_AVAILABLE:
+            self.mlflow_manager = MLflowManager() if use_mlflow else None
+            self.model_registry = ModelRegistry()
+            
+            # Initialize processors
+            self.audio_preprocessor = AudioPreprocessor()
+            self.video_preprocessor = VideoPreprocessor()
+            self.text_preprocessor = TextPreprocessor()
+            
+            # Initialize models
+            self.summarizer = None
+            self.speech_recognizer = None
+            self.video_analyzer = None
+            self.model_trainer = None
+            self.evaluator = ModelEvaluator(device=self.device)
+        else:
+            # Use simple fallback components
+            self.mlflow_manager = None
+            self.model_registry = None
+            self.audio_preprocessor = None
+            self.video_preprocessor = None
+            self.text_preprocessor = None
+            self.summarizer = None
+            self.speech_recognizer = None
+            self.video_analyzer = None
+            self.model_trainer = None
+            self.evaluator = None
         
-        # Initialize processors
-        self.audio_preprocessor = AudioPreprocessor()
-        self.video_preprocessor = VideoPreprocessor()
-        self.text_preprocessor = TextPreprocessor()
-        
-        # Initialize models
-        self.summarizer = None
-        self.speech_recognizer = None
-        self.video_analyzer = None
-        self.model_trainer = None
-        self.evaluator = ModelEvaluator(device=self.device)
+        # Initialize simple fallback summarizer
+        self.simple_summarizer = SimpleSummarizer()
         
         # Initialize inference server
         self.inference_server = None
@@ -84,6 +131,10 @@ class EnhancedVideoSummarizer:
             summarizer_model: Summarization model name
             speech_model: Speech recognition model name
         """
+        if not ADVANCED_MODELS_AVAILABLE:
+            logger.warning("Advanced models not available, using simple fallback")
+            return
+        
         try:
             logger.info("Loading ML models...")
             
@@ -111,7 +162,8 @@ class EnhancedVideoSummarizer:
             
         except Exception as e:
             logger.error(f"Error loading models: {str(e)}")
-            raise
+            logger.warning("Falling back to simple summarizer")
+            self.summarizer = None
     
     def process_video(self, video_path: str, max_sentences: int = 5, 
                      comprehensive: bool = False, **kwargs) -> Dict[str, Any]:
