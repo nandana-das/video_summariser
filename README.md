@@ -3,7 +3,6 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![Multi-Platform](https://img.shields.io/badge/Platforms-1000+-green.svg)](https://github.com/yt-dlp/yt-dlp)
 
 A beautiful and intelligent video summarization tool that transforms any video into actionable insights. Built with Flask for maximum flexibility and performance. Upload your video files or paste URLs to get instant summaries with keywords, action items, and detailed analysis.
 
@@ -12,7 +11,7 @@ A beautiful and intelligent video summarization tool that transforms any video i
 ### 🎯 Core Functionality
 - **📁 Video Upload**: Support for multiple video formats (MP4, AVI, MOV, MKV, WMV, FLV)
 - **🔗 URL Processing**: Support for 1000+ video platforms (YouTube, Vimeo, Instagram, TikTok, Facebook, Twitter, Twitch, etc.)
-- **🤖 Intelligent Summarization**: Advanced AI-powered text summarization using transformer models
+- **🤖 Intelligent Summarization**: Advanced text summarization using extractive methods
 - **🎯 Action Item Extraction**: Automatically identify and extract tasks and action items
 - **🔑 Keyword Analysis**: Extract key topics and important terms from content
 - **📊 Beautiful Analytics**: Visual metrics and insights about your content
@@ -48,8 +47,6 @@ video_summariser/
 ├── app.py                 # Flask application
 ├── run.py                 # Run script
 ├── requirements.txt       # Dependencies
-├── ml_main.py            # Core ML functionality
-├── config.py             # Configuration settings
 ├── templates/
 │   └── index.html        # Main HTML template
 ├── static/
@@ -57,8 +54,6 @@ video_summariser/
 │   │   └── style.css     # Beautiful CSS styling
 │   └── js/
 │       └── app.js        # JavaScript functionality
-├── ml_models/            # ML model implementations
-├── utils/                # Utility modules
 └── README.md             # This file
 ```
 

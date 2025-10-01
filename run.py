@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Run the Flask Video Summarizer application.
+Run the Video Summarizer Flask application.
 """
 
 import os
