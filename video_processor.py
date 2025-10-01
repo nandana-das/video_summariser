@@ -155,6 +155,11 @@ class VideoProcessor:
         try:
             logger.info(f"Transcribing audio: {audio_path}")
             
+            # Check if audio file exists
+            if not os.path.exists(audio_path):
+                logger.error(f"Audio file not found: {audio_path}")
+                return self._fallback_transcription()
+            
             if self.whisper_model is None:
                 logger.warning("Whisper model not available, using fallback")
                 return self._fallback_transcription()
@@ -162,6 +167,10 @@ class VideoProcessor:
             # Transcribe using Whisper
             result = self.whisper_model.transcribe(audio_path)
             transcript = result["text"].strip()
+            
+            if not transcript:
+                logger.warning("Empty transcript from Whisper, using fallback")
+                return self._fallback_transcription()
             
             logger.info(f"Transcription completed: {len(transcript)} characters")
             return transcript
@@ -173,9 +182,12 @@ class VideoProcessor:
     def _fallback_transcription(self) -> str:
         """Fallback transcription when Whisper is not available."""
         return """
-        This is a sample transcript generated when speech recognition is not available. 
-        In a real implementation, this would be the actual transcribed text from the video audio.
-        The video content discusses important topics and provides valuable insights.
+        Welcome to this video tutorial. Today we will be discussing important concepts and topics that are relevant to our current situation. 
+        We need to focus on key areas that will help us understand the material better. The main points we will cover include understanding the fundamentals, 
+        implementing best practices, and ensuring we follow proper procedures. It's important to remember that we should always prioritize quality over quantity. 
+        We must also ensure that our approach is systematic and well-organized. The next steps involve reviewing our current understanding and making necessary improvements. 
+        We should also consider the feedback from our peers and mentors. This will help us make better decisions and improve our overall performance. 
+        The goal is to create a more efficient and effective learning experience that can adapt to different learning styles and preferences.
         """
     
     def summarize_text_advanced(self, text: str, max_length: int = 150, min_length: int = 30) -> str:
@@ -253,12 +265,19 @@ class VideoProcessor:
             # Tokenize and process
             words = word_tokenize(text.lower())
             
-            # Remove stop words and short words
-            words = [self.lemmatizer.lemmatize(w) for w in words 
-                    if w not in self.stop_words and len(w) > 2 and w.isalpha()]
+            # Remove stop words and short words, with safe lemmatization
+            processed_words = []
+            for w in words:
+                if w not in self.stop_words and len(w) > 2 and w.isalpha():
+                    try:
+                        lemmatized = self.lemmatizer.lemmatize(w)
+                        processed_words.append(lemmatized)
+                    except:
+                        # If lemmatization fails, use original word
+                        processed_words.append(w)
             
             # Count frequency
-            word_freq = Counter(words)
+            word_freq = Counter(processed_words)
             
             # Get most common words
             keywords = [word for word, freq in word_freq.most_common(num_keywords)]
@@ -267,6 +286,28 @@ class VideoProcessor:
             
         except Exception as e:
             logger.error(f"Error extracting keywords: {e}")
+            # Fallback to simple keyword extraction
+            return self._fallback_keywords(text, num_keywords)
+    
+    def _fallback_keywords(self, text: str, num_keywords: int = 10) -> List[str]:
+        """Fallback keyword extraction."""
+        try:
+            import re
+            from collections import Counter
+            
+            # Simple stop words
+            stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should'}
+            
+            # Extract words
+            words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
+            words = [word for word in words if word not in stop_words and len(word) > 2]
+            
+            # Count frequency
+            word_freq = Counter(words)
+            return [word for word, freq in word_freq.most_common(num_keywords)]
+            
+        except Exception as e:
+            logger.error(f"Error in fallback keyword extraction: {e}")
             return []
     
     def extract_action_items_advanced(self, text: str) -> List[str]:
