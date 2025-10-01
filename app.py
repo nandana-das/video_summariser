@@ -1,6 +1,6 @@
 """
-Simplified Flask web application for Video Summarizer.
-No MLflow dependencies - just core functionality.
+Advanced Flask web application for Video Summarizer.
+Real video processing with ML and NLP capabilities.
 """
 
 from flask import Flask, render_template, request, jsonify
@@ -12,6 +12,9 @@ import logging
 from werkzeug.utils import secure_filename
 import uuid
 from datetime import datetime
+
+# Import video processor
+from video_processor import VideoProcessor
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -29,71 +32,8 @@ def allowed_file(filename):
     """Check if file extension is allowed."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def simple_summarize(text, max_sentences=5):
-    """Simple extractive summarization without ML dependencies."""
-    import re
-    from collections import Counter
-    
-    # Split into sentences
-    sentences = re.split(r'[.!?]+', text)
-    sentences = [s.strip() for s in sentences if s.strip()]
-    
-    if len(sentences) <= max_sentences:
-        return text
-    
-    # Simple scoring based on word count and position
-    scores = []
-    for i, sentence in enumerate(sentences):
-        # Score based on length and position (first sentences are more important)
-        length_score = len(sentence.split())
-        position_score = 1.0 / (i + 1)  # First sentences get higher score
-        score = length_score + position_score
-        scores.append(score)
-    
-    # Select top sentences
-    top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:max_sentences]
-    top_indices = sorted(top_indices)  # Maintain order
-    
-    summary_sentences = [sentences[i] for i in top_indices]
-    return '. '.join(summary_sentences) + '.'
-
-def extract_keywords(text, num_keywords=10):
-    """Extract keywords using simple word frequency."""
-    import re
-    from collections import Counter
-    
-    # Simple stop words
-    stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should'}
-    
-    # Extract words
-    words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
-    words = [word for word in words if word not in stop_words and len(word) > 2]
-    
-    # Count frequency
-    word_freq = Counter(words)
-    return [word for word, freq in word_freq.most_common(num_keywords)]
-
-def extract_action_items(text):
-    """Extract potential action items."""
-    import re
-    
-    sentences = re.split(r'[.!?]+', text)
-    action_items = []
-    
-    # Look for action patterns
-    action_patterns = [
-        r'\b(?:need to|should|must|have to|will|going to)\b',
-        r'\b(?:action|task|step|next|follow up|implement)\b',
-        r'\b(?:please|make sure|ensure|remember)\b'
-    ]
-    
-    for sentence in sentences:
-        for pattern in action_patterns:
-            if re.search(pattern, sentence, re.IGNORECASE):
-                action_items.append(sentence.strip())
-                break
-    
-    return action_items[:10]
+# Initialize video processor
+video_processor = VideoProcessor()
 
 @app.route('/')
 def index():
@@ -103,7 +43,7 @@ def index():
 
 @app.route('/api/process-video', methods=['POST'])
 def process_video():
-    """Process uploaded video file."""
+    """Process uploaded video file with real ML processing."""
     try:
         # Check if file is present
         if 'video' not in request.files:
@@ -117,49 +57,31 @@ def process_video():
             return jsonify({'error': 'Invalid file type. Please upload a video file.'}), 400
         
         # Get processing parameters
-        max_sentences = int(request.form.get('max_sentences', 5))
+        max_length = int(request.form.get('max_sentences', 5)) * 30  # Convert to approximate tokens
         processing_mode = request.form.get('processing_mode', 'fast')
         
-        # For now, create a mock transcript since we don't have audio processing
-        mock_transcript = """
-        This is a sample transcript of the video content. The video discusses important topics 
-        related to technology and innovation. We need to focus on key areas that will drive 
-        future growth and development. The main points include understanding market trends, 
-        implementing new strategies, and ensuring customer satisfaction. 
+        # Save uploaded file temporarily
+        filename = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4()}_{filename}"
+        video_path = os.path.join(tempfile.gettempdir(), unique_filename)
+        file.save(video_path)
         
-        It's important to remember that we should always prioritize quality over quantity. 
-        We must also ensure that our team is properly trained and equipped with the right tools. 
-        The next steps involve reviewing our current processes and making necessary improvements.
-        
-        We should also consider the feedback from our customers and stakeholders. This will help us 
-        make better decisions and improve our overall performance. The goal is to create a more 
-        efficient and effective organization that can adapt to changing market conditions.
-        """
-        
-        # Generate summary
-        summary = simple_summarize(mock_transcript, max_sentences)
-        
-        # Extract keywords
-        keywords = extract_keywords(mock_transcript)
-        
-        # Extract action items
-        action_items = extract_action_items(mock_transcript)
-        
-        return jsonify({
-            'success': True,
-            'data': {
-                'summary': summary,
-                'transcript': mock_transcript,
-                'keywords': keywords,
-                'action_items': action_items,
-                'metadata': {
-                    'summary_sentence_count': len(summary.split('.')),
-                    'keyword_count': len(keywords),
-                    'action_item_count': len(action_items),
-                    'compression_ratio': len(summary) / len(mock_transcript)
-                }
-            }
-        })
+        try:
+            # Process video with real ML models
+            result = video_processor.process_video_file(video_path, max_length)
+            
+            if result.get('success'):
+                return jsonify({
+                    'success': True,
+                    'data': result
+                })
+            else:
+                return jsonify({'error': result.get('error', 'Processing failed')}), 500
+                
+        finally:
+            # Clean up uploaded file
+            if os.path.exists(video_path):
+                os.unlink(video_path)
         
     except Exception as e:
         logger.error(f"Error processing video: {str(e)}")
@@ -176,42 +98,19 @@ def process_url():
         if not url:
             return jsonify({'error': 'No URL provided'}), 400
         
-        # For now, create a mock transcript since we don't have URL processing
-        mock_transcript = f"""
-        This is a sample transcript from the video at {url}. The video discusses important topics 
-        related to technology and innovation. We need to focus on key areas that will drive 
-        future growth and development. The main points include understanding market trends, 
-        implementing new strategies, and ensuring customer satisfaction. 
+        # Convert sentences to approximate tokens
+        max_length = max_sentences * 30
         
-        It's important to remember that we should always prioritize quality over quantity. 
-        We must also ensure that our team is properly trained and equipped with the right tools. 
-        The next steps involve reviewing our current processes and making necessary improvements.
-        """
+        # Process video with real ML models
+        result = video_processor.process_video_url(url, max_length)
         
-        # Generate summary
-        summary = simple_summarize(mock_transcript, max_sentences)
-        
-        # Extract keywords
-        keywords = extract_keywords(mock_transcript)
-        
-        # Extract action items
-        action_items = extract_action_items(mock_transcript)
-        
-        return jsonify({
-            'success': True,
-            'data': {
-                'summary': summary,
-                'transcript': mock_transcript,
-                'keywords': keywords,
-                'action_items': action_items,
-                'metadata': {
-                    'summary_sentence_count': len(summary.split('.')),
-                    'keyword_count': len(keywords),
-                    'action_item_count': len(action_items),
-                    'compression_ratio': len(summary) / len(mock_transcript)
-                }
-            }
-        })
+        if result.get('success'):
+            return jsonify({
+                'success': True,
+                'data': result
+            })
+        else:
+            return jsonify({'error': result.get('error', 'Processing failed')}), 500
         
     except Exception as e:
         logger.error(f"Error processing URL: {str(e)}")
