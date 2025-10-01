@@ -148,28 +148,42 @@ class VideoProcessor:
         try:
             logger.info(f"Extracting audio from: {video_path}")
             
+            # Check if video file exists
+            if not os.path.exists(video_path):
+                logger.error(f"Video file not found: {video_path}")
+                return None
+            
             # Create temporary audio file in temp directory
             import tempfile
             temp_dir = tempfile.gettempdir()
             video_name = os.path.basename(video_path).rsplit('.', 1)[0]
             audio_path = os.path.join(temp_dir, f"{video_name}_audio.wav")
             
-            # Extract audio using moviepy
-            video = mp.VideoFileClip(video_path)
-            audio = video.audio
+            logger.info(f"Creating audio file at: {audio_path}")
             
+            # Extract audio using moviepy
+            logger.info("Loading video with moviepy...")
+            video = mp.VideoFileClip(video_path)
+            logger.info(f"Video loaded. Duration: {video.duration}s")
+            
+            audio = video.audio
             if audio is None:
                 logger.error("No audio track found in video")
+                video.close()
                 return None
             
+            logger.info(f"Audio track found. Duration: {audio.duration}s")
+            
             # Write audio file
+            logger.info("Writing audio file...")
             audio.write_audiofile(audio_path, verbose=False, logger=None)
             audio.close()
             video.close()
             
             # Verify the file was created
             if os.path.exists(audio_path):
-                logger.info(f"Audio extracted: {audio_path}")
+                file_size = os.path.getsize(audio_path)
+                logger.info(f"Audio extracted successfully: {audio_path} ({file_size} bytes)")
                 return audio_path
             else:
                 logger.error(f"Audio file was not created at {audio_path}")
@@ -252,16 +266,21 @@ class VideoProcessor:
         try:
             if self.summarizer is None:
                 logger.warning("Summarization model not available, using fallback")
-                return self._fallback_summarization(text)
+                return self._fallback_summarization(text, max_length // 30)
+            
+            logger.info(f"Using BART model for summarization. Text length: {len(text)}")
             
             # Clean and prepare text
             text = self._clean_text(text)
+            logger.info(f"Cleaned text length: {len(text)}")
             
             # Truncate if too long (BART has token limits)
             if len(text) > 1000:
                 text = text[:1000] + "..."
+                logger.info(f"Truncated text to: {len(text)}")
             
             # Generate summary
+            logger.info("Generating summary with BART model...")
             summary = self.summarizer(
                 text,
                 max_length=max_length,
@@ -269,11 +288,14 @@ class VideoProcessor:
                 do_sample=False
             )
             
-            return summary[0]['summary_text']
+            result = summary[0]['summary_text']
+            logger.info(f"BART generated summary: {len(result)} characters")
+            return result
             
         except Exception as e:
             logger.error(f"Error in advanced summarization: {e}")
-            return self._fallback_summarization(text)
+            logger.info("Falling back to extractive summarization")
+            return self._fallback_summarization(text, max_length // 30)
     
     def _fallback_summarization(self, text: str, max_sentences: int = 5) -> str:
         """Fallback summarization using extractive methods."""
