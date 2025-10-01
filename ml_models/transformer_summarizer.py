@@ -13,9 +13,21 @@ from transformers import (
     PegasusForConditionalGeneration, PegasusTokenizer,
     pipeline, AutoModel, AutoConfig
 )
-from sentence_transformers import SentenceTransformer
+try:
+    from sentence_transformers import SentenceTransformer
+    SENTENCE_TRANSFORMERS_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"Sentence transformers not available: {e}")
+    SENTENCE_TRANSFORMERS_AVAILABLE = False
+    SentenceTransformer = None
 from rouge_score import rouge_scorer
-from bert_score import score as bert_score
+try:
+    from bert_score import score as bert_score
+    BERT_SCORE_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"BERT score not available: {e}")
+    BERT_SCORE_AVAILABLE = False
+    bert_score = None
 import mlflow
 import mlflow.transformers
 import sys
@@ -82,8 +94,12 @@ class TransformerSummarizer:
             self.model.to(self.device)
             self.model.eval()
             
-            # Load sentence transformer for similarity
-            self.sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+            # Load sentence transformer for similarity (if available)
+            if SENTENCE_TRANSFORMERS_AVAILABLE:
+                self.sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+            else:
+                self.sentence_model = None
+                logger.warning("Sentence transformer not available, similarity features disabled")
             
             logger.info("Models loaded successfully")
             
@@ -156,19 +172,29 @@ class TransformerSummarizer:
             if len(sentences) <= num_sentences:
                 return text
             
-            # Get sentence embeddings
-            sentence_embeddings = self.sentence_model.encode(sentences)
+            # Get sentence embeddings (if available)
+            if self.sentence_model is not None:
+                sentence_embeddings = self.sentence_model.encode(sentences)
+            else:
+                # Fallback to simple word count scoring
+                sentence_embeddings = None
             
             # Calculate sentence importance scores
             scores = []
-            for i, embedding in enumerate(sentence_embeddings):
-                # Calculate similarity to all other sentences
-                similarities = np.dot(sentence_embeddings, embedding) / (
-                    np.linalg.norm(sentence_embeddings, axis=1) * np.linalg.norm(embedding)
-                )
-                # Score is average similarity (excluding self)
-                score = np.mean(similarities[np.arange(len(similarities)) != i])
-                scores.append(score)
+            if sentence_embeddings is not None:
+                for i, embedding in enumerate(sentence_embeddings):
+                    # Calculate similarity to all other sentences
+                    similarities = np.dot(sentence_embeddings, embedding) / (
+                        np.linalg.norm(sentence_embeddings, axis=1) * np.linalg.norm(embedding)
+                    )
+                    # Score is average similarity (excluding self)
+                    score = np.mean(similarities[np.arange(len(similarities)) != i])
+                    scores.append(score)
+            else:
+                # Fallback: use simple word count scoring
+                for sentence in sentences:
+                    score = len(sentence.split())  # Word count as importance
+                    scores.append(score)
             
             # Select top sentences
             top_indices = np.argsort(scores)[-num_sentences:]
@@ -202,13 +228,20 @@ class TransformerSummarizer:
                 'rougeL': rouge_scores['rougeL'].fmeasure
             }
             
-            # BERTScore
-            P, R, F1 = bert_score([candidate], [reference], lang="en", verbose=False)
-            bert_metrics = {
-                'bert_precision': P.item(),
-                'bert_recall': R.item(),
-                'bert_f1': F1.item()
-            }
+            # BERTScore (if available)
+            if BERT_SCORE_AVAILABLE and bert_score is not None:
+                P, R, F1 = bert_score([candidate], [reference], lang="en", verbose=False)
+                bert_metrics = {
+                    'bert_precision': P.item(),
+                    'bert_recall': R.item(),
+                    'bert_f1': F1.item()
+                }
+            else:
+                bert_metrics = {
+                    'bert_precision': 0.0,
+                    'bert_recall': 0.0,
+                    'bert_f1': 0.0
+                }
             
             # Combine metrics
             metrics = {**rouge_metrics, **bert_metrics}
