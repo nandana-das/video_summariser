@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Video Summarizer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        input, textarea { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; }
+        .result { background: #e8f5e8; padding: 10px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Debug Video Summarizer</h1>
+    
+    <div class="debug">
+        <h3>Debug Info</h3>
+        <div id="debugInfo">Loading...</div>
+    </div>
+    
+    <div class="debug">
+        <h3>Test API Calls</h3>
+        <button onclick="testPlatforms()">Test Platforms API</button>
+        <button onclick="testUrlProcessing()">Test URL Processing</button>
+        <div id="apiResult"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>Test File Upload</h3>
+        <input type="file" id="testFile" accept="video/*">
+        <button onclick="testFileUpload()" id="uploadBtn" disabled>Test File Upload</button>
+        <div id="fileResult"></div>
+    </div>
+    
+    <div class="debug">
+        <h3>Test URL Input</h3>
+        <input type="url" id="testUrl" placeholder="Enter video URL">
+        <button onclick="testUrlInput()">Test URL Input</button>
+        <div id="urlResult"></div>
+    </div>
+
+    <script>
+        // Debug information
+        function updateDebugInfo() {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.innerHTML = `
+                <p><strong>User Agent:</strong> ${navigator.userAgent}</p>
+                <p><strong>Current URL:</strong> ${window.location.href}</p>
+                <p><strong>JavaScript Enabled:</strong> Yes</p>
+                <p><strong>Console Available:</strong> ${typeof console !== 'undefined' ? 'Yes' : 'No'}</p>
+                <p><strong>Fetch Available:</strong> ${typeof fetch !== 'undefined' ? 'Yes' : 'No'}</p>
+            `;
+        }
+
+        // Test platforms API
+        async function testPlatforms() {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = 'Testing platforms API...';
+            
+            try {
+                const response = await fetch('/api/platforms');
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <strong>Platforms API Success!</strong><br>
+                        Found ${data.platforms.length} platforms:<br>
+                        ${data.platforms.map(p => p.name).join(', ')}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="background: #ffe8e8; padding: 10px; border-radius: 5px;">
+                        <strong>Platforms API Error:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test URL processing
+        async function testUrlProcessing() {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = 'Testing URL processing...';
+            
+            try {
+                const response = await fetch('/api/process-url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: 'https://youtube.com/watch?v=test',
+                        max_sentences: 5,
+                        processing_mode: 'fast'
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <strong>URL Processing Success!</strong><br>
+                        Summary: ${data.data.summary.substring(0, 100)}...<br>
+                        Keywords: ${data.data.keywords.join(', ')}<br>
+                        Action Items: ${data.data.action_items.length}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="background: #ffe8e8; padding: 10px; border-radius: 5px;">
+                        <strong>URL Processing Error:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test file upload
+        function testFileUpload() {
+            const fileInput = document.getElementById('testFile');
+            const resultDiv = document.getElementById('fileResult');
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <strong>File Selected:</strong><br>
+                        Name: ${file.name}<br>
+                        Size: ${file.size} bytes<br>
+                        Type: ${file.type}
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = 'No file selected';
+            }
+        }
+
+        // Test URL input
+        function testUrlInput() {
+            const urlInput = document.getElementById('testUrl');
+            const resultDiv = document.getElementById('urlResult');
+            
+            const url = urlInput.value.trim();
+            if (url) {
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <strong>URL Entered:</strong><br>
+                        ${url}
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = 'No URL entered';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebugInfo();
+            
+            // Enable file upload button when file is selected
+            document.getElementById('testFile').addEventListener('change', function() {
+                const uploadBtn = document.getElementById('uploadBtn');
+                uploadBtn.disabled = this.files.length === 0;
+            });
+        });
+    </script>
+</body>
+</html>

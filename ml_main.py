@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Optional, Dict, Any, List
 import numpy as np
 import torch
-import mlflow
+# MLflow removed - not needed for this application
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -16,7 +16,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from utils.logger import setup_logger
 from utils.video_source_manager import VideoSourceManager
 from config import (
-    MLFLOW_SETTINGS, SERVING_SETTINGS, DEVICE_SETTINGS,
+    SERVING_SETTINGS, DEVICE_SETTINGS,
     SUMMARIZATION_SETTINGS, TRANSCRIPTION_SETTINGS, CV_SETTINGS
 )
 
@@ -24,7 +24,7 @@ from config import (
 try:
     from ml_models import (
         TransformerSummarizer, AdvancedSpeechRecognizer, VideoAnalyzer,
-        MLflowManager, ModelTrainer, ModelEvaluator, InferenceServer,
+        ModelTrainer, ModelEvaluator, InferenceServer,
         ModelRegistry, AudioPreprocessor, VideoPreprocessor, TextPreprocessor
     )
     ADVANCED_MODELS_AVAILABLE = True
@@ -37,8 +37,6 @@ except ImportError as e:
     class AdvancedSpeechRecognizer:
         pass
     class VideoAnalyzer:
-        pass
-    class MLflowManager:
         pass
     class ModelTrainer:
         pass
@@ -63,20 +61,17 @@ logger = setup_logger(__name__)
 class EnhancedVideoSummarizer:
     """Enhanced video summarizer with complete ML suite."""
     
-    def __init__(self, use_mlflow: bool = True, device: str = "auto"):
+    def __init__(self, device: str = "auto"):
         """
         Initialize the enhanced video summarizer.
         
         Args:
-            use_mlflow: Whether to use MLflow for experiment tracking
             device: Device for computation
         """
         self.device = self._get_device(device)
-        self.use_mlflow = use_mlflow
         
         # Initialize ML components (if available)
         if ADVANCED_MODELS_AVAILABLE:
-            self.mlflow_manager = MLflowManager() if use_mlflow else None
             self.model_registry = ModelRegistry()
             
             # Initialize processors
@@ -92,7 +87,6 @@ class EnhancedVideoSummarizer:
             self.evaluator = ModelEvaluator(device=self.device)
         else:
             # Use simple fallback components
-            self.mlflow_manager = None
             self.model_registry = None
             self.audio_preprocessor = None
             self.video_preprocessor = None
