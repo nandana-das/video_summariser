@@ -4,26 +4,29 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 
-A beautiful and intelligent video summarization tool that transforms any video into actionable insights. Built with Flask for maximum flexibility and performance. Upload your video files or paste URLs to get instant summaries with keywords, action items, and detailed analysis.
+A powerful AI-powered video summarization tool that transforms any video into actionable insights using advanced machine learning and natural language processing. Built with Flask and state-of-the-art ML models including Whisper for speech recognition and BART for intelligent summarization. Upload your video files or paste URLs to get instant summaries with keywords, action items, and detailed analysis.
 
 ## ✨ Features
 
 ### 🎯 Core Functionality
 - **📁 Video Upload**: Support for multiple video formats (MP4, AVI, MOV, MKV, WMV, FLV)
 - **🔗 URL Processing**: Support for 1000+ video platforms (YouTube, Vimeo, Instagram, TikTok, Facebook, Twitter, Twitch, etc.)
-- **🤖 Intelligent Summarization**: Advanced text summarization using extractive methods
-- **🎯 Action Item Extraction**: Automatically identify and extract tasks and action items
-- **🔑 Keyword Analysis**: Extract key topics and important terms from content
-- **📊 Beautiful Analytics**: Visual metrics and insights about your content
-- **💾 Download Results**: Export summaries, transcripts, and analysis data
+- **🎤 Real Speech Recognition**: Advanced audio transcription using OpenAI's Whisper AI
+- **🤖 ML-Powered Summarization**: Intelligent text summarization using BART transformer model
+- **🎯 Smart Action Item Extraction**: NLP-powered identification of tasks and action items
+- **🔑 Advanced Keyword Analysis**: Extract key topics using NLTK and advanced NLP techniques
+- **📊 Comprehensive Analytics**: Visual metrics, ROUGE scores, and compression ratios
+- **💾 Export Results**: Download summaries, transcripts, and analysis data
 
 ### 🚀 Advanced Features
 - **🌐 Modern Web Interface**: Beautiful, responsive Flask-based web application
 - **📱 Mobile Friendly**: Works perfectly on all devices
-- **⚡ Fast Processing**: Quick analysis and summarization
+- **⚡ Real-time Processing**: Live video download, audio extraction, and ML processing
 - **🎨 Professional UI**: Modern design with smooth animations and drag-and-drop
-- **🔄 Real-time Updates**: Live progress tracking and status updates
-- **🔧 API Endpoints**: RESTful API for integration with other applications
+- **🔄 Live Progress Tracking**: Real-time status updates during processing
+- **🔧 RESTful API**: Complete API for integration with other applications
+- **🛡️ Robust Error Handling**: Graceful fallbacks and comprehensive error management
+- **📈 Performance Metrics**: ROUGE scores, compression ratios, and quality metrics
 
 ## 🚀 Quick Start
 
@@ -44,9 +47,10 @@ Navigate to: **http://localhost:5000**
 
 ```
 video_summariser/
-├── app.py                 # Flask application
+├── app.py                 # Flask application with ML integration
+├── video_processor.py     # Core ML/NLP processing engine
 ├── run.py                 # Run script
-├── requirements.txt       # Dependencies
+├── requirements.txt       # ML/NLP dependencies
 ├── templates/
 │   └── index.html        # Main HTML template
 ├── static/
@@ -56,6 +60,22 @@ video_summariser/
 │       └── app.js        # JavaScript functionality
 └── README.md             # This file
 ```
+
+## 🧠 ML/NLP Technologies
+
+### Core Models
+- **Whisper AI**: OpenAI's state-of-the-art speech recognition model
+- **BART**: Facebook's transformer model for text summarization
+- **NLTK**: Natural Language Toolkit for text processing
+- **Transformers**: Hugging Face transformers library
+
+### Processing Pipeline
+1. **Video Download**: yt-dlp for multi-platform video downloading
+2. **Audio Extraction**: MoviePy for high-quality audio extraction
+3. **Speech Recognition**: Whisper for accurate transcription
+4. **Text Summarization**: BART for intelligent summarization
+5. **Keyword Extraction**: NLTK for advanced keyword analysis
+6. **Action Item Detection**: Pattern matching and NLP techniques
 
 ## 🎨 UI Features
 
@@ -81,9 +101,11 @@ video_summariser/
 ## 🔧 Configuration
 
 ### Processing Settings
-- **Summary Length**: Adjustable from 3 to 20 sentences
+- **Summary Length**: Adjustable from 3 to 20 sentences (configurable tokens)
 - **Processing Mode**: Fast or Comprehensive analysis
 - **File Size Limit**: 500MB maximum file size
+- **ML Model Selection**: Automatic model loading with fallback options
+- **Audio Quality**: High-quality audio extraction and processing
 
 ### Supported Platforms
 - YouTube, Vimeo, Instagram, TikTok
@@ -151,8 +173,10 @@ Edit `static/js/app.js` to customize:
 ### Common Issues
 1. **File Upload Fails**: Check file size and format
 2. **URL Processing Fails**: Verify URL format and platform support
-3. **Processing Errors**: Check ML model dependencies
-4. **UI Issues**: Clear browser cache and reload
+3. **ML Model Loading**: Ensure all dependencies are installed correctly
+4. **Audio Processing**: Check if ffmpeg is installed for audio extraction
+5. **Memory Issues**: Large videos may require more RAM for processing
+6. **UI Issues**: Clear browser cache and reload
 
 ### Debug Mode
 ```bash
@@ -182,4 +206,22 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**Built with ❤️ using Flask, Python, and modern web technologies.**
+## 🎯 What Makes This Special
+
+### Real AI Processing
+- **Actual Speech Recognition**: Uses OpenAI's Whisper to transcribe real audio
+- **Intelligent Summarization**: BART transformer model generates meaningful summaries
+- **Advanced NLP**: NLTK and transformers for sophisticated text analysis
+- **Multi-Platform Support**: Downloads from 1000+ video platforms
+- **Production Ready**: Robust error handling and graceful fallbacks
+
+### Technical Excellence
+- **State-of-the-Art Models**: Latest ML/NLP models for best results
+- **Scalable Architecture**: Flask-based backend with modular design
+- **Real-time Processing**: Live progress tracking and status updates
+- **Cross-Platform**: Works on Windows, macOS, and Linux
+- **Memory Efficient**: Optimized for processing large video files
+
+---
+
+**Built with ❤️ using Flask, Python, Whisper AI, BART, and modern ML technologies.**
