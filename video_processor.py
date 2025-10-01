@@ -67,6 +67,13 @@ class VideoProcessor:
                 device=0 if torch.cuda.is_available() else -1
             )
             
+            # Download NLTK data properly
+            logger.info("Downloading NLTK data...")
+            nltk.download('punkt', quiet=True)
+            nltk.download('stopwords', quiet=True)
+            nltk.download('wordnet', quiet=True)
+            nltk.download('averaged_perceptron_tagger', quiet=True)
+            
             logger.info("Models loaded successfully")
             
         except Exception as e:
