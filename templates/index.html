@@ -58,7 +58,7 @@
                                 <span class="file-name" id="fileName"></span>
                                 <span class="file-size" id="fileSize"></span>
                             </div>
-                            <button class="remove-file" onclick="removeFile()">
+                            <button class="remove-file" onclick="removeFile()" title="Remove file" aria-label="Remove selected file">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -69,7 +69,7 @@
                 <div class="tab-content" id="url-tab">
                     <div class="url-input-group">
                         <input type="url" id="videoUrl" placeholder="Paste video URL here (YouTube, Vimeo, Instagram, etc.)">
-                        <button class="url-btn" onclick="validateUrl()">
+                        <button class="url-btn" onclick="validateUrl()" title="Validate URL" aria-label="Validate video URL">
                             <i class="fas fa-check"></i>
                         </button>
                     </div>
@@ -82,12 +82,12 @@
                 <div class="settings-section">
                     <div class="setting-group">
                         <label for="maxSentences">Summary Length</label>
-                        <input type="range" id="maxSentences" min="3" max="20" value="5">
+                        <input type="range" id="maxSentences" min="3" max="20" value="5" aria-label="Summary length in sentences">
                         <span class="range-value">5 sentences</span>
                     </div>
                     <div class="setting-group">
                         <label for="processingMode">Processing Mode</label>
-                        <select id="processingMode">
+                        <select id="processingMode" aria-label="Select processing mode">
                             <option value="fast">⚡ Fast</option>
                             <option value="comprehensive">🧠 Comprehensive</option>
                         </select>
@@ -118,11 +118,11 @@
                 <div class="results-header">
                     <h2>📊 Analysis Results</h2>
                     <div class="result-actions">
-                        <button class="action-btn" onclick="downloadResults()">
+                        <button class="action-btn" onclick="downloadResults()" title="Download results" aria-label="Download analysis results">
                             <i class="fas fa-download"></i>
                             Download
                         </button>
-                        <button class="action-btn" onclick="shareResults()">
+                        <button class="action-btn" onclick="shareResults()" title="Share results" aria-label="Share analysis results">
                             <i class="fas fa-share"></i>
                             Share
                         </button>
