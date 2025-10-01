@@ -748,7 +748,7 @@ def main():
         st.markdown("---")
         
         # Display file info with better styling
-            if uploaded_file:
+        if uploaded_file:
             st.success(f"✅ **File Ready:** {uploaded_file.name}")
         elif video_url:
             st.success(f"✅ **Video URL Ready:** {video_url}")
@@ -816,13 +816,13 @@ def main():
         # Create two-column layout for results
         col1, col2 = st.columns([2, 1])
     
-    with col2:
+        with col2:
             st.markdown("### 📈 Quick Stats")
-        
-        if 'summary_data' in st.session_state:
-            summary_data = st.session_state['summary_data']
-            metadata = summary_data.get('metadata', {})
             
+            if 'summary_data' in st.session_state:
+                summary_data = st.session_state['summary_data']
+                metadata = summary_data.get('metadata', {})
+                
                 # Create beautiful metric cards
                 st.markdown("""
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
@@ -850,9 +850,9 @@ def main():
                     f"{metadata.get('compression_ratio', 0):.1%}"
                 ), unsafe_allow_html=True)
             
-            # Compression ratio visualization
-            if 'original_sentence_count' in metadata and 'summary_sentence_count' in metadata:
-                fig = go.Figure(data=[
+                # Compression ratio visualization
+                if 'original_sentence_count' in metadata and 'summary_sentence_count' in metadata:
+                    fig = go.Figure(data=[
                         go.Bar(name='Original', x=['Sentences'], y=[metadata['original_sentence_count']], 
                                marker_color='rgba(102, 126, 234, 0.6)'),
                         go.Bar(name='Summary', x=['Sentences'], y=[metadata['summary_sentence_count']], 
@@ -866,13 +866,13 @@ def main():
                         paper_bgcolor='rgba(0,0,0,0)',
                         font=dict(family="Inter, sans-serif")
                     )
-                st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.info("Upload and process a file to see statistics")
+                    st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("Upload and process a file to see statistics")
     
         with col1:
             # Detailed results with beautiful tabs
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Summary", "🎯 Action Items", "🔑 Keywords", "👥 Entities", "📊 Analysis"])
+            tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Summary", "🎯 Action Items", "🔑 Keywords", "👥 Entities", "📊 Analysis"])
         
             with tab1:
                 st.markdown("### 📝 AI-Generated Summary")
@@ -881,30 +881,30 @@ def main():
                 st.markdown("### 📄 Full Transcript")
                 with st.expander("View Full Transcript", expanded=False):
                     st.write(summary_data['transcript'])
-        
-        with tab2:
+            
+            with tab2:
                 st.markdown("### 🎯 Action Items")
-            action_items = summary_data.get('action_items', [])
-            if action_items:
-                for i, item in enumerate(action_items, 1):
-                    st.markdown(f'<div class="action-item"><strong>{i}.</strong> {item}</div>', unsafe_allow_html=True)
-            else:
-                st.info("No action items found in the content")
-        
-        with tab3:
+                action_items = summary_data.get('action_items', [])
+                if action_items:
+                    for i, item in enumerate(action_items, 1):
+                        st.markdown(f'<div class="action-item"><strong>{i}.</strong> {item}</div>', unsafe_allow_html=True)
+                else:
+                    st.info("No action items found in the content")
+            
+            with tab3:
                 st.markdown("### 🔑 Keywords & Topics")
-            keywords = summary_data.get('keywords', [])
-            if keywords:
+                keywords = summary_data.get('keywords', [])
+                if keywords:
                     # Create keyword visualization
-                keyword_df = pd.DataFrame({
+                    keyword_df = pd.DataFrame({
                         'keyword': keywords[:15],  # Top 15 keywords
                         'frequency': range(len(keywords[:15]), 0, -1)
-                })
-                
+                    })
+                    
                     # Keyword bar chart with better styling
-                fig = px.bar(keyword_df, x='frequency', y='keyword', orientation='h',
-                           title="Top Keywords", color='frequency',
-                           color_continuous_scale='Blues')
+                    fig = px.bar(keyword_df, x='frequency', y='keyword', orientation='h',
+                               title="Top Keywords", color='frequency',
+                               color_continuous_scale='Blues')
                     fig.update_layout(
                         height=400, 
                         yaxis={'categoryorder': 'total ascending'},
@@ -912,39 +912,39 @@ def main():
                         paper_bgcolor='rgba(0,0,0,0)',
                         font=dict(family="Inter, sans-serif")
                     )
-                st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.info("No keywords extracted")
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.info("No keywords extracted")
         
-        with tab4:
+            with tab4:
                 st.markdown("### 👥 Named Entities")
-            entities = summary_data.get('named_entities', [])
-            if entities:
-                # Group entities by type
-                entity_df = pd.DataFrame(entities, columns=['Entity', 'Type'])
-                entity_counts = entity_df['Type'].value_counts()
-                
+                entities = summary_data.get('named_entities', [])
+                if entities:
+                    # Group entities by type
+                    entity_df = pd.DataFrame(entities, columns=['Entity', 'Type'])
+                    entity_counts = entity_df['Type'].value_counts()
+                    
                     # Entity type pie chart with better styling
-                fig = px.pie(values=entity_counts.values, names=entity_counts.index,
-                               title="Named Entity Types",
-                               color_discrete_sequence=px.colors.qualitative.Set3)
+                    fig = px.pie(values=entity_counts.values, names=entity_counts.index,
+                                   title="Named Entity Types",
+                                   color_discrete_sequence=px.colors.qualitative.Set3)
                     fig.update_layout(
                         plot_bgcolor='rgba(0,0,0,0)',
                         paper_bgcolor='rgba(0,0,0,0)',
                         font=dict(family="Inter, sans-serif")
                     )
-                st.plotly_chart(fig, use_container_width=True)
-                
-                # Entity table
+                    st.plotly_chart(fig, use_container_width=True)
+                    
+                    # Entity table
                     st.markdown("#### All Named Entities")
-                st.dataframe(entity_df, use_container_width=True)
-            else:
-                st.info("No named entities found")
-        
-        with tab5:
-                st.markdown("### 📊 Detailed Analysis")
-            metadata = summary_data.get('metadata', {})
+                    st.dataframe(entity_df, use_container_width=True)
+                else:
+                    st.info("No named entities found")
             
+            with tab5:
+                st.markdown("### 📊 Detailed Analysis")
+                metadata = summary_data.get('metadata', {})
+                
                 # Analysis metrics in a grid
                 st.markdown("""
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
@@ -966,50 +966,50 @@ def main():
                     metadata.get('summary_sentence_count', 0),
                     f"{metadata.get('compression_ratio', 0):.1%}"
                 ), unsafe_allow_html=True)
-            
-            # Download section
+                
+                # Download section
                 st.markdown("### 📥 Download Results")
-            
-            if 'results' in st.session_state:
-                results = st.session_state['results']
                 
-                col1, col2, col3 = st.columns(3)
-                
-                with col1:
-                    if 'transcript_path' in results:
-                        with open(results['transcript_path'], 'r', encoding='utf-8') as f:
-                            transcript_content = f.read()
-                        st.download_button(
-                            label="📄 Download Transcript",
-                            data=transcript_content,
-                            file_name="transcript.txt",
+                if 'results' in st.session_state:
+                    results = st.session_state['results']
+                    
+                    col1, col2, col3 = st.columns(3)
+                    
+                    with col1:
+                        if 'transcript_path' in results:
+                            with open(results['transcript_path'], 'r', encoding='utf-8') as f:
+                                transcript_content = f.read()
+                            st.download_button(
+                                label="📄 Download Transcript",
+                                data=transcript_content,
+                                file_name="transcript.txt",
                                 mime="text/plain",
                                 use_container_width=True
-                        )
-                
-                with col2:
-                    if 'summary_path' in results:
-                        with open(results['summary_path'], 'r', encoding='utf-8') as f:
-                            summary_content = f.read()
-                        st.download_button(
-                            label="📋 Download Summary",
-                            data=summary_content,
-                            file_name="summary.txt",
+                            )
+                    
+                    with col2:
+                        if 'summary_path' in results:
+                            with open(results['summary_path'], 'r', encoding='utf-8') as f:
+                                summary_content = f.read()
+                            st.download_button(
+                                label="📋 Download Summary",
+                                data=summary_content,
+                                file_name="summary.txt",
                                 mime="text/plain",
                                 use_container_width=True
-                        )
-                
-                with col3:
-                    # Download JSON data
-                    import json
-                    json_data = json.dumps(summary_data, indent=2)
-                    st.download_button(
-                        label="📊 Download JSON Data",
-                        data=json_data,
-                        file_name="summary_data.json",
+                            )
+                    
+                    with col3:
+                        # Download JSON data
+                        import json
+                        json_data = json.dumps(summary_data, indent=2)
+                        st.download_button(
+                            label="📊 Download JSON Data",
+                            data=json_data,
+                            file_name="summary_data.json",
                             mime="application/json",
                             use_container_width=True
-                    )
+                        )
     
     # Beautiful Footer
     st.markdown("---")
