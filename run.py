@@ -20,9 +20,9 @@ if __name__ == '__main__':
     os.makedirs('static/css', exist_ok=True)
     os.makedirs('static/js', exist_ok=True)
     
-    print("🚀 Starting AI Video Summarizer...")
-    print("📱 Open your browser to: http://localhost:5000")
-    print("🛑 Press Ctrl+C to stop the server")
+    print("Starting AI Video Summarizer...")
+    print("Open your browser to: http://localhost:5000")
+    print("Press Ctrl+C to stop the server")
     
     # Run the Flask app
     app.run(
